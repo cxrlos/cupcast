@@ -92,7 +92,7 @@ def club_report(predictions: pd.DataFrame) -> pd.DataFrame:
     market = summarize(market_probs(has_odds), has_odds["outcome"].to_numpy())
     return pd.DataFrame(
         [
-            {"forecaster": "dixon_coles", **model},
-            {"forecaster": "pinnacle_closing", **market},
+            {"forecaster": "Dixon-Coles", **model},
+            {"forecaster": "Pinnacle closing", **market},
         ]
     )

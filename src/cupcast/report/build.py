@@ -40,7 +40,14 @@ def write_fragment(name: str, content: str) -> None:
 
 
 def latex_table(frame: pd.DataFrame, columns: dict[str, str], digits: int = 3) -> str:
-    renamed = frame[list(columns)].rename(columns=columns)
+    renamed = frame[list(columns)].rename(columns=columns).copy()
+    # pandas no longer escapes cell text; a bare underscore breaks the build.
+    # Headers are written by us and may intentionally contain math mode.
+    for column in renamed.columns:
+        if not pd.api.types.is_numeric_dtype(renamed[column]):
+            renamed[column] = (
+                renamed[column].astype(str).str.replace("_", r"\_", regex=False)
+            )
     return renamed.to_latex(index=False, float_format=f"%.{digits}f")
 
 
