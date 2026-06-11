@@ -12,6 +12,7 @@ dependencies = [
     "requests>=2.32",
     "python-dotenv>=1.0",
     "matplotlib>=3.9",
+    "truststore>=0.10.4",
 ]
 
 [dependency-groups]
