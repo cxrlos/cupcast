@@ -26,7 +26,22 @@ cp .env.example .env   # add your API keys
 uv run pytest
 ```
 
-Pipeline commands will be documented here as the stages land. The underlying datasets are fetched via APIs (API-Football, The Odds API, FBref) and are not redistributed in this repo — the fetch scripts rebuild them from your own keys.
+### Rebuilding the data on a fresh machine
+
+The `data/` directory is never committed (licensed/fetched datasets). Either copy it
+from an existing machine, or rebuild it:
+
+```sh
+uv run python -m cupcast.fetch.pull run --from 2022 --to 2024  # API-Football (~30 requests, ledgered)
+uv run python -c 'from cupcast.fetch.martj42 import fetch_results_csv; fetch_results_csv()'
+uv run python -m cupcast.fetch.squads          # confirmed 26-man squads
+uv run python -m cupcast.fetch.football_data   # club results + closing odds
+uv run python -m cupcast.fetch.fbref           # 2025-26 player metrics (slow; drives a browser)
+```
+
+The last two fail on networks that filter football-data.co.uk or kill unsigned
+browser drivers (typical corporate setups) — run them from an unmanaged machine.
+All fetchers are cache-first: rerunning never refetches what exists.
 
 ## License
 
