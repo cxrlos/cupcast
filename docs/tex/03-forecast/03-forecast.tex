@@ -45,10 +45,20 @@ harder Round-of-32 draw under the official bracket:
 Each scenario removes or limits a named player, reallocates his expected
 minutes to the next players in the position group, rebuilds the squad
 composite and shrinkage prior of Paper~I \S6, and reruns the identical seeded
-simulation; deltas are therefore attributable to the player, not Monte Carlo
-noise:
+simulation:
 
 \input{../generated/sensitivity_scenarios.tex}
+
+No scenario moves a championship probability beyond the Monte Carlo noise
+floor ($\approx \pm 0.3$pp at 50{,}000 simulations). This is a structural
+property worth stating plainly: with ratings dominated by match results and
+the tuned light shrinkage of Paper~I, a single player's availability shifts
+the squad composite, the composite shifts the prior, and the prior carries
+only $\sim$20\% weight for a data-rich team --- each link damps the effect.
+The model's genuine sensitivity is path-dependence (the previous section),
+not single-player availability; a reader who believes individual stars matter
+more than this should treat the headline probabilities as conditional on
+roughly current squad quality.
 
 \section{Model versus Market}
 Consensus bookmaker championship probabilities (outright odds across books,

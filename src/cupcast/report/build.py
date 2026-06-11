@@ -256,11 +256,16 @@ def write_sensitivity(fit, n_eff, elo_ratings, details, n_sims: int, seed: int) 
     lines.append("")
     if not scenarios.empty:
         lines += [scenarios.round(4).to_markdown(index=False), ""]
+        se = (0.15 * 0.85 / n_sims) ** 0.5
         lines += [
             "Each scenario reweights the squad's expected minutes (next player up",
             "within the position absorbs the freed minutes), rebuilds the squad",
             "composite and the shrinkage prior, and reruns the same seeded 50k",
             "simulation. Deltas are read against the baseline run.",
+            "",
+            f"Monte Carlo noise floor: at {n_sims:,} simulations the standard error",
+            f"on a ~15% championship probability is ~{se:.2%}, so deltas within",
+            f"roughly ±{2 * se:.2%} are not distinguishable from zero.",
             "",
         ]
         write_fragment(
@@ -387,14 +392,37 @@ def write_validation(table: pd.DataFrame) -> None:
 
 
 def main() -> None:
+    import argparse
+
     warnings.filterwarnings("ignore")
+    parser = argparse.ArgumentParser(prog="cupcast-report")
+    parser.add_argument(
+        "--allow-degraded",
+        action="store_true",
+        help="overwrite existing outputs even without squad composites",
+    )
+    args = parser.parse_args()
     OUTPUTS.mkdir(exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)
     np.random.seed(0)  # matplotlib jitter only; simulation seeds are explicit
 
     n_sims, seed = 50_000, 2026
     base_fit, n_eff, elo_ratings = build_components()
-    fit = shrunk_fit(base_fit, n_eff, elo_ratings, load_composites())
+    composites = load_composites()
+    if (
+        composites is None
+        and (OUTPUTS / "simulation_results.csv").exists()
+        and not args.allow_degraded
+    ):
+        raise SystemExit(
+            "refusing to overwrite existing outputs without squad composites "
+            "(this machine lacks player data); rerun with --allow-degraded to force"
+        )
+    fit = shrunk_fit(base_fit, n_eff, elo_ratings, composites)
+    if composites is not None:
+        composites.round(4).sort_values("coverage", ascending=False).to_csv(
+            OUTPUTS / "squad_coverage.csv", index=False
+        )
     gk_z = keeper_zscores()
     print(f"goalkeeper shootout adjustment: {len(gk_z)}/48 teams covered")
     details = simulate_tournament(fit, n_sims=n_sims, seed=seed, gk_z=gk_z)
