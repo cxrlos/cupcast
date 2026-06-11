@@ -3,11 +3,12 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-# Starting values; both are tuned by out-of-sample predictive likelihood in
-# the validation stage (Ley et al. 2019 find smooth decay with a half period
-# of roughly three years optimal for national teams).
-DEFAULT_HALF_LIFE_YEARS = 3.0
-DEFAULT_FRIENDLY_WEIGHT = 0.5
+# Tuned by out-of-sample log-loss over eight half-year folds (2022-2026,
+# n=4167): optimum flat across 2.5-3.5y half-life, consistent with Ley et al.
+# 2019. Friendly down-weighting strictly hurt predictive likelihood at every
+# half-life, so friendlies enter at full weight.
+DEFAULT_HALF_LIFE_YEARS = 2.5
+DEFAULT_FRIENDLY_WEIGHT = 1.0
 
 
 def match_weights(

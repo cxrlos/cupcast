@@ -5,11 +5,16 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
+from scipy.special import xlogy
 from scipy.stats import poisson
 
 # Quadratic penalty pinning mean attack/defense at zero: the standard
 # identifiability constraint expressed in a gradient-friendly form.
 SUM_PENALTY = 100.0
+# Weak ridge on attack/defense: keeps teams with near-zero effective sample
+# (heavily decayed history) bounded instead of diverging; negligible for any
+# team with real data.
+RIDGE = 1e-2
 RHO_BOUNDS = (-0.3, 0.3)
 TAU_FLOOR = 1e-10
 
@@ -125,23 +130,33 @@ def build_objective(matches: pd.DataFrame, weights: np.ndarray | None = None):
         mu, gamma, rho = theta[0], theta[1], theta[2]
         att = theta[3 : 3 + n]
         dfn = theta[3 + n : 3 + 2 * n]
-        lam = np.exp(mu + att[h] - dfn[a] + gamma * host)
-        nu = np.exp(mu + att[a] - dfn[h])
+        eta_h = mu + att[h] - dfn[a] + gamma * host
+        eta_a = mu + att[a] - dfn[h]
+        lam = np.exp(eta_h)
+        nu = np.exp(eta_a)
         log_tau, d_lam, d_nu, d_rho = _tau_terms(x, y, lam, nu, rho)
-        ll = w * (x * np.log(lam) - lam + y * np.log(nu) - nu + log_tau)
+        # xlogy keeps 0*log(0) at zero when a rate underflows for an
+        # unidentified team mid-optimization.
+        ll = w * (xlogy(x, lam) - lam + xlogy(y, nu) - nu + log_tau)
         g_eta_h = w * (x - lam + d_lam * lam)
         g_eta_a = w * (y - nu + d_nu * nu)
         att_sum, dfn_sum = att.sum(), dfn.sum()
-        value = -ll.sum() + SUM_PENALTY * (att_sum**2 + dfn_sum**2)
+        value = (
+            -ll.sum()
+            + SUM_PENALTY * (att_sum**2 + dfn_sum**2)
+            + RIDGE * (att @ att + dfn @ dfn)
+        )
         grad = np.concatenate(
             [
                 [-(g_eta_h.sum() + g_eta_a.sum())],
                 [-(g_eta_h * host).sum()],
                 [-(w * d_rho).sum()],
                 -(np.bincount(h, g_eta_h, n) + np.bincount(a, g_eta_a, n))
-                + 2 * SUM_PENALTY * att_sum,
+                + 2 * SUM_PENALTY * att_sum
+                + 2 * RIDGE * att,
                 (np.bincount(a, g_eta_h, n) + np.bincount(h, g_eta_a, n))
-                + 2 * SUM_PENALTY * dfn_sum,
+                + 2 * SUM_PENALTY * dfn_sum
+                + 2 * RIDGE * dfn,
             ]
         )
         return value, grad
