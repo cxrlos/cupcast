@@ -1,0 +1,30 @@
+# Secrets — never committed
+.env
+
+# Data — fetched/paid datasets stay local; only derived findings ship in docs/ and outputs/
+data/
+
+# Personal tooling
+.tmux-sessionizer
+.claude/settings.local.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+
+# LaTeX intermediates (tectonic writes only the PDF, but just in case)
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.run.xml
+*.synctex.gz
+
+# OS
+.DS_Store

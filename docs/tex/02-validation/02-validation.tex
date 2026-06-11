@@ -1,0 +1,52 @@
+\documentclass[11pt]{article}
+\input{../shared/preamble.tex}
+
+\title{Cupcast II: Validation and Calibration}
+\author{Carlos Garcia}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+I validate the forecasting model of Paper~I in two tiers. Tier~1 tests the match-level
+engine where data is abundant: club football (league seasons and continental cups),
+scored against bookmaker closing odds. Tier~2 replays Euro~2024 and Copa~Am\'erica~2024
+end-to-end with training windows truncated to each tournament's eve, testing the full
+international pipeline including tournament simulation. Probabilistic skill is measured
+with strictly proper scoring rules \cite{gneitingraftery2007} --- log-loss and Brier
+score --- alongside reliability diagrams; miscalibration, if found, is corrected by
+isotonic regression \cite{zadroznyelkan2002} or Platt scaling \cite{platt1999} before
+any 2026 forecast is issued.
+\end{abstract}
+
+\section{Introduction}
+\emph{To be written.}
+
+\section{Validation Design}
+% Two tiers, as-of training discipline, leakage controls.
+\emph{To be written.}
+
+\section{Scoring Rules}
+% Log-loss and Brier definitions, why strictly proper scoring rules
+% \cite{gneitingraftery2007}, bookmaker baseline construction (overround removal).
+\emph{To be written.}
+
+\section{Tier 1: Club Football}
+% Leagues, UCL/UEL, Libertadores/Sudamericana; results vs closing-odds baseline.
+\emph{To be written.}
+
+\section{Tier 2: Tournament Replays}
+% Euro 2024 and Copa America 2024: match-level scores and tournament-level outcomes.
+\emph{To be written.}
+
+\section{Calibration}
+% Reliability diagrams; recalibration decision and method.
+\emph{To be written.}
+
+\section{Discussion}
+\emph{To be written.}
+
+\bibliographystyle{abbrvnat}
+\bibliography{references}
+\end{document}

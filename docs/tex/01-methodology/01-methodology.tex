@@ -1,0 +1,100 @@
+\documentclass[11pt]{article}
+\input{../shared/preamble.tex}
+
+\title{Cupcast I: A Dixon--Coles Model with Squad-Quality Shrinkage\\for Forecasting the 2026 FIFA World Cup}
+\author{Carlos Garcia}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+I specify a forecasting model for the 2026 FIFA World Cup: a Dixon--Coles goal model \cite{dixoncoles1997} fitted by maximum likelihood on a decade of international results with exponential time-decay weighting, whose team ratings are shrunk toward a prior built from minutes-weighted, performance-based squad-quality composites. Match probabilities feed a Monte Carlo simulation of the full 48-team tournament under FIFA's official group tiebreakers and Round-of-32 bracket allocation. This paper documents the data, the rating system, the model equations, the estimation procedure, and the simulation design. Validation is reported in Paper~II; the forecast itself in Paper~III.
+\end{abstract}
+
+\section{Introduction}
+% Scope, design principles (probabilistic, reproducible, performance-data-only),
+% relation to Papers II and III.
+\emph{To be written as the pipeline lands.}
+
+\section{Data}
+\subsection{International match history}
+% API-Football pulls by competition-season, 2015--2026; coverage notes.
+\subsection{Squad and player data}
+% Confirmed 26-man squads (post June 2, 2026 deadline); FBref 2025-26 per-90 metrics;
+% coverage tiers and the documented fallback for uncovered leagues. No market values.
+\subsection{Bookmaker odds}
+% The Odds API snapshot; overround removal.
+
+\section{Elo Ratings}
+The rating input follows the World Football Elo system \cite{eloratings}, whose
+predictive value for match outcomes is established empirically by
+\citet{hvattumarntzen2010}. After each match the rating of team $i$ updates as
+\begin{equation}
+  R_i' = R_i + K \, G \,(W - W_e), \qquad
+  W_e = \frac{1}{1 + 10^{-(R_i - R_j + H)/400}},
+\end{equation}
+where $K$ encodes match importance, $G$ is the goal-difference multiplier, $W$ the
+realised result, and $H$ the home adjustment. Computing ratings from raw history
+(rather than scraping published tables) yields reproducible as-of-date ratings for
+backtesting.
+% Parameter table, initialization, spot-check against published values.
+
+\section{The Goal Model}
+Goals scored by teams $i$ and $j$ are modelled as conditionally Poisson with rates
+\begin{equation}
+  \lambda_i = \exp\!\bigl(\mu + \att_i - \dfn_j + \gamma\, h_i\bigr), \qquad
+  \lambda_j = \exp\!\bigl(\mu + \att_j - \dfn_i\bigr),
+\end{equation}
+where $\att$ and $\dfn$ are attack and defense ratings, and the host indicator $h_i$
+is nonzero only for Mexico, the USA, and Canada in their home venues --- the 2026
+format makes every other fixture neutral. Independence is corrected at low scores by
+the Dixon--Coles adjustment \cite{dixoncoles1997}
+\begin{equation}
+  \Prob(X=x, Y=y) = \tau_{\rho}(x,y)\,
+    \frac{e^{-\lambda_i}\lambda_i^{x}}{x!}\,
+    \frac{e^{-\lambda_j}\lambda_j^{y}}{y!},
+\end{equation}
+with $\tau_\rho$ reweighting the $\{0,1\}\times\{0,1\}$ scorelines; this addresses
+the draw underestimation of the independent-Poisson model of \citet{maher1982}.
+Training matches are weighted by recency,
+\begin{equation}
+  \phi(t) = \exp(-\xi\, \Delta t),
+\end{equation}
+with $\xi$ selected by out-of-sample predictive likelihood, following the evidence in
+\citet{leyetal2019} that smooth decay outperforms fixed windows for national teams.
+Friendlies receive an additional importance down-weight, mirroring the Elo $K$ hierarchy.
+% Likelihood, identifiability constraint, optimization details, fitted-parameter summaries.
+
+\section{Squad-Quality Composite}
+% Per-90 metrics (xG, xAG, progressive actions, defensive actions), expected-minutes
+% weights built from recent NT starts, depth charts, and pre-tournament XIs; age and
+% top-league-minutes covariates; league-strength adjustment; coverage tiers.
+\emph{To be written.}
+
+\section{Shrinkage Toward the Squad Prior}
+Fitted ratings are blended with the squad-composite-implied prior,
+\begin{equation}
+  \tilde{\att}_i = w_i\, \hat{\att}_i + (1 - w_i)\, \att_i^{\mathrm{prior}}, \qquad
+  w_i = \frac{n_i^{\mathrm{eff}}}{n_i^{\mathrm{eff}} + k},
+\end{equation}
+where $n_i^{\mathrm{eff}}$ is the decay-weighted match count, so teams with sparse
+competitive history lean on squad quality while data-rich teams keep their fitted
+ratings --- the partial-pooling logic of hierarchical models \cite{baioblangiardo2010}
+in a transparent two-stage form.
+% Choice of k, prior construction, sensitivity to the blend.
+
+\section{Tournament Simulation}
+% Group standings under FIFA 2026 tiebreakers; ranking of the eight best third-placed
+% teams; the official Annex R32 allocation; extra time as rescaled rates; shootout model;
+% 50{,}000 seeded simulations; parameter uncertainty via draws from the MLE's
+% asymptotic distribution.
+\emph{To be written.}
+
+\section{Reproducibility}
+% Seeds, cache-first data layer, exact rerun instructions.
+\emph{To be written.}
+
+\bibliographystyle{abbrvnat}
+\bibliography{references}
+\end{document}

@@ -1,0 +1,19 @@
+% Shared preamble for the Cupcast papers.
+\usepackage[a4paper,margin=2.8cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{microtype}
+% Classic BibTeX via natbib: tectonic runs bibtex natively, while its bundled
+% biblatex is version-locked against system biber. Each paper folder symlinks
+% references.bib from shared/.
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,allcolors=blue!45!black]{hyperref}
+\graphicspath{{../figures/}}
+
+% Shared notation
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\att}{\alpha}
+\newcommand{\dfn}{\beta}
