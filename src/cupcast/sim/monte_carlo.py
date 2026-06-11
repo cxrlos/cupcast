@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
 
@@ -22,7 +24,24 @@ from cupcast.sim.worldcup2026 import (
 GROUP_LETTERS = tuple(GROUPS)
 
 
+@dataclass
+class TournamentDetails:
+    table: pd.DataFrame
+    winners: np.ndarray  # (12, n_sims) team ids of group winners
+    runners: np.ndarray
+    thirds: np.ndarray
+    qualifies: np.ndarray  # (12, n_sims) bool, third qualified
+    match_winner: dict[int, np.ndarray]
+    match_loser: dict[int, np.ndarray]
+
+
 def run_tournament(fit: DixonColesFit, n_sims: int = 50_000, seed: int = 2026) -> pd.DataFrame:
+    return simulate_tournament(fit, n_sims, seed).table
+
+
+def simulate_tournament(
+    fit: DixonColesFit, n_sims: int = 50_000, seed: int = 2026
+) -> TournamentDetails:
     rng = np.random.default_rng(seed)
     team_id = {team: i for i, team in enumerate(ALL_TEAMS)}
     n_teams = len(ALL_TEAMS)
@@ -133,4 +152,12 @@ def run_tournament(fit: DixonColesFit, n_sims: int = 50_000, seed: int = 2026) -
             "exp_ga": exp_ga,
         }
     )
-    return table.sort_values("p_champion", ascending=False, ignore_index=True)
+    return TournamentDetails(
+        table=table.sort_values("p_champion", ascending=False, ignore_index=True),
+        winners=winners,
+        runners=runners,
+        thirds=thirds,
+        qualifies=qualifies,
+        match_winner=match_winner,
+        match_loser=match_loser,
+    )
