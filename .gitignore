@@ -8,6 +8,11 @@ data/
 .tmux-sessionizer
 .claude/settings.local.json
 
+# seleniumbase litter from FBref browser pulls
+downloaded_files/
+latest_logs/
+archived_logs/
+
 # Python
 .venv/
 __pycache__/
