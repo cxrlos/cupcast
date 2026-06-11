@@ -21,6 +21,9 @@ class Step:
     required: bool
     run: callable
     probe_url: str | None  # None = covered elsewhere or local-only
+    # Statuses a healthy host returns to the doctor's unauthenticated probe
+    # (keys are never sent by the probe; only the real fetchers use them).
+    auth_statuses: tuple[int, ...] = ()
 
 
 def _api_football(force: bool) -> None:
@@ -30,7 +33,13 @@ def _api_football(force: bool) -> None:
 
 
 STEPS = (
-    Step("api_football", True, _api_football, "https://v3.football.api-sports.io/"),
+    Step(
+        "api_football",
+        True,
+        _api_football,
+        "https://v3.football.api-sports.io/",
+        auth_statuses=(403, 499),
+    ),
     Step(
         "martj42",
         True,
@@ -45,8 +54,14 @@ STEPS = (
         football_data.main,
         "https://www.football-data.co.uk/mmz4281/2324/E0.csv",
     ),
-    Step("odds", False, odds.main, "https://api.the-odds-api.com/v4/sports"),
-    Step("fbref", False, fbref.main, "https://fbref.com/en/"),
+    Step(
+        "odds",
+        False,
+        odds.main,
+        "https://api.the-odds-api.com/v4/sports",
+        auth_statuses=(401,),
+    ),
+    Step("fbref", False, fbref.main, "https://fbref.com/en/", auth_statuses=(403,)),
 )
 
 
@@ -94,9 +109,16 @@ def doctor() -> int:
             )
             chain = " -> ".join(str(r.status_code) for r in response.history) or "direct"
             body = next(response.iter_content(80), b"")[:80]
-            blocked = b"Blocked" in body or b"security team" in body
-            verdict = "BLOCKED (filter page)" if blocked else f"HTTP {response.status_code}"
-            print(f"{step.name:15} {verdict:22} redirects: {chain:18} final: {response.url}")
+            blocked = b"Blocked" in body or b"security team" in body or b"reason=" in body
+            if blocked or "reason=" in response.url:
+                verdict = "BLOCKED (filter page)"
+            elif response.status_code in step.auth_statuses:
+                verdict = f"reachable ({response.status_code} auth-gated, expected)"
+            elif response.status_code == 200:
+                verdict = "reachable (200)"
+            else:
+                verdict = f"HTTP {response.status_code} (unexpected)"
+            print(f"{step.name:15} {verdict:38} redirects: {chain:14} final: {response.url}")
             response.close()
         except Exception as exc:  # noqa: BLE001 — report, don't crash
             print(f"{step.name:15} UNREACHABLE: {type(exc).__name__}: {str(exc)[:90]}")
