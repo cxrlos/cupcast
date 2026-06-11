@@ -27,12 +27,23 @@ def pull_player_season_stats() -> dict[str, pd.DataFrame]:
     return frames
 
 
+def flatten_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    frame = frame.reset_index()
+    frame.columns = [
+        "_".join(str(part) for part in col if str(part) not in ("", "nan")).strip("_").lower()
+        if isinstance(col, tuple)
+        else str(col).lower()
+        for col in frame.columns
+    ]
+    return frame
+
+
 def main() -> None:
     warnings.filterwarnings("ignore")
     PROCESSED.mkdir(parents=True, exist_ok=True)
     for stat_type, frame in pull_player_season_stats().items():
         out = PROCESSED / f"fbref_{stat_type}_2025_26.csv"
-        frame.reset_index().to_csv(out, index=False)
+        flatten_columns(frame).to_csv(out, index=False)
         print(f"{stat_type}: {frame.shape[0]} player rows -> {out}")
 
 

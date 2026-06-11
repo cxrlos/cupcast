@@ -41,7 +41,20 @@ uv run python -m cupcast.fetch.fbref           # 2025-26 player metrics (slow; d
 
 The last two fail on networks that filter football-data.co.uk or kill unsigned
 browser drivers (typical corporate setups) — run them from an unmanaged machine.
-All fetchers are cache-first: rerunning never refetches what exists.
+The FBref pull drives a real browser: install Chromium first (`pacman -S chromium`
+on Arch, `brew install --cask chromium` on macOS). Building the papers needs
+`tectonic` (in the Arch repos and Homebrew). All fetchers are cache-first:
+rerunning never refetches what exists.
+
+### The forecast
+
+```sh
+uv run python -m cupcast.fetch.odds   # market snapshot (needs ODDS_API_KEY)
+uv run python -m cupcast.run          # fit -> shrink -> 50k simulations -> outputs/
+```
+
+Everything is CPU-bound numpy/scipy — no GPU involved — and the full pipeline
+runs in well under a minute once data is cached.
 
 ## License
 
