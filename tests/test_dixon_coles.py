@@ -79,12 +79,24 @@ def test_negative_rho_inflates_low_draws():
     assert adjusted[0, 1] < base[0, 1]
 
 
-def test_host_advantage_raises_home_rate():
+def test_host_advantage_applies_per_side():
     fit = make_fit()
-    neutral_lam, neutral_nu = fit.rates("A", "B", host=False)
-    host_lam, host_nu = fit.rates("A", "B", host=True)
+    neutral_lam, neutral_nu = fit.rates("A", "B")
+    host_lam, host_nu = fit.rates("A", "B", host_home=True)
     assert host_lam == pytest.approx(neutral_lam * np.exp(0.3))
     assert host_nu == neutral_nu
+    away_lam, away_nu = fit.rates("A", "B", host_away=True)
+    assert away_lam == pytest.approx(neutral_lam)
+    assert away_nu == pytest.approx(neutral_nu * np.exp(0.3))
+
+
+def test_rate_scale_shrinks_goals():
+    fit = make_fit()
+    full = fit.expected_goals("A", "B")
+    third = fit.score_matrix("A", "B", rate_scale=1 / 3)
+    goals = np.arange(third.shape[0])
+    et_home = float(goals @ third.sum(axis=1))
+    assert et_home == pytest.approx(full[0] / 3, rel=0.05)
 
 
 def test_unknown_team_raises():

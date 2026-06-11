@@ -27,19 +27,28 @@ class DixonColesFit:
     def __post_init__(self) -> None:
         self._index = {team: i for i, team in enumerate(self.teams)}
 
-    def rates(self, home: str, away: str, host: bool = False) -> tuple[float, float]:
+    def rates(
+        self, home: str, away: str, host_home: bool = False, host_away: bool = False
+    ) -> tuple[float, float]:
         try:
             h, a = self._index[home], self._index[away]
         except KeyError as missing:
             raise KeyError(f"team not in fit: {missing.args[0]!r}") from None
-        lam = np.exp(self.mu + self.attack[h] - self.defense[a] + self.host_advantage * host)
-        nu = np.exp(self.mu + self.attack[a] - self.defense[h])
+        lam = np.exp(self.mu + self.attack[h] - self.defense[a] + self.host_advantage * host_home)
+        nu = np.exp(self.mu + self.attack[a] - self.defense[h] + self.host_advantage * host_away)
         return float(lam), float(nu)
 
     def score_matrix(
-        self, home: str, away: str, host: bool = False, max_goals: int = 10
+        self,
+        home: str,
+        away: str,
+        host_home: bool = False,
+        host_away: bool = False,
+        max_goals: int = 10,
+        rate_scale: float = 1.0,
     ) -> np.ndarray:
-        lam, nu = self.rates(home, away, host)
+        lam, nu = self.rates(home, away, host_home, host_away)
+        lam, nu = lam * rate_scale, nu * rate_scale
         goals = np.arange(max_goals + 1)
         matrix = np.outer(poisson.pmf(goals, lam), poisson.pmf(goals, nu))
         corner = np.array(
@@ -52,15 +61,22 @@ class DixonColesFit:
         return matrix / matrix.sum()
 
     def outcome_probs(
-        self, home: str, away: str, host: bool = False, max_goals: int = 10
+        self,
+        home: str,
+        away: str,
+        host_home: bool = False,
+        host_away: bool = False,
+        max_goals: int = 10,
     ) -> tuple[float, float, float]:
-        matrix = self.score_matrix(home, away, host, max_goals)
+        matrix = self.score_matrix(home, away, host_home, host_away, max_goals)
         home_win = float(np.tril(matrix, -1).sum())
         draw = float(np.trace(matrix))
         return home_win, draw, 1.0 - home_win - draw
 
-    def expected_goals(self, home: str, away: str, host: bool = False) -> tuple[float, float]:
-        matrix = self.score_matrix(home, away, host)
+    def expected_goals(
+        self, home: str, away: str, host_home: bool = False, host_away: bool = False
+    ) -> tuple[float, float]:
+        matrix = self.score_matrix(home, away, host_home, host_away)
         goals = np.arange(matrix.shape[0])
         return float(goals @ matrix.sum(axis=1)), float(goals @ matrix.sum(axis=0))
 
