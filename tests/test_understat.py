@@ -1,46 +1,31 @@
-import json
-
 import pandas as pd
 import pytest
 
 from cupcast.features.squad_strength import load_player_quality, load_understat_players
-from cupcast.fetch.understat import parse_players_payload
-
-PLAYERS = [
-    {
-        "id": "1",
-        "player_name": "Star Forward",
-        "time": "2700",
-        "npxG": "18.4",
-        "xA": "7.2",
-        "team_title": "Big Club",
-    },
-    {
-        "id": "2",
-        "player_name": "Bench Defender",
-        "time": "300",
-        "npxG": "0.4",
-        "xA": "0.1",
-        "team_title": "Small Club",
-    },
-]
+from cupcast.fetch.understat import to_players_table
 
 
-def synthetic_page() -> str:
-    blob = json.dumps(PLAYERS)
-    escaped = "".join(f"\\x{ord(c):02x}" if c in "[]{}\"'" else c for c in blob)
-    return f"<script>var playersData = JSON.parse('{escaped}');</script>"
+def soccerdata_shaped_stats():
+    frame = pd.DataFrame(
+        {
+            "league": ["ENG-Premier League"] * 3,
+            "season": ["2526"] * 3,
+            "team": ["Big Club", "Small Club", "Mid Club"],
+            "player": ["Star Forward", "Bench Defender", "Zero Minutes"],
+            "minutes": [2700, 300, 0],
+            "np_xg": [18.4, 0.4, 0.0],
+            "xa": [7.2, 0.1, 0.0],
+        }
+    )
+    return frame.set_index(["league", "season", "team", "player"])
 
 
-def test_parse_players_payload_decodes_hex_escapes():
-    players = parse_players_payload(synthetic_page())
-    assert players[0]["player_name"] == "Star Forward"
-    assert players[1]["team_title"] == "Small Club"
-
-
-def test_parse_players_payload_raises_on_layout_change():
-    with pytest.raises(OSError, match="layout changed"):
-        parse_players_payload("<html>nothing here</html>")
+def test_to_players_table_computes_per90_and_drops_zero_minutes():
+    table = to_players_table(soccerdata_shaped_stats())
+    assert len(table) == 2  # zero-minutes row dropped
+    star = table[table["player"] == "Star Forward"].iloc[0]
+    assert star["quality_per90"] == pytest.approx((18.4 + 7.2) / 30.0)
+    assert set(table.columns) >= {"player", "team", "league", "minutes", "quality_per90"}
 
 
 def understat_csv(tmp_path):

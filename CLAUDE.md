@@ -12,6 +12,10 @@ Monte Carlo forecasting engine for the 2026 FIFA World Cup. Dixon-Coles goal mod
 - `uv run pytest` — run tests
 - `uv run ruff check src tests` — lint
 - `make docs` — build the three LaTeX papers (requires `tectonic`)
+- `make doctor` — preflight: keys, per-source reachability with redirect chains, cache state
+- `make all-data` — every fetcher with per-step isolation and an end summary
+- `make all-data-force` — re-download refreshable caches (API-Football stays ledgered)
+- `make forecast` — run day: refresh results, snapshot odds, 50k sims, all outputs, papers
 
 ## Layout
 

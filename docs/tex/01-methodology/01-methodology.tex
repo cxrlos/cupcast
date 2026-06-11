@@ -51,12 +51,14 @@ Confirmed 26-man squads for all 48 teams (registration deadline June 2, 2026)
 are parsed from the structured player templates of the consolidated squads
 page \cite{wikisquads}: 1{,}247 players with shirt number, position, age at
 kickoff, caps, and club. (Argentina registered 25 players; the source is
-faithful on this point.) Player-level performance comes from FBref's
-Opta-sourced 2025--26 season tables \cite{fbref} --- minutes, npxG, xAG,
-progressive actions, and goalkeeper post-shot expected goals --- covering the
-big five European leagues. Coverage tiers and the fallback for squads based in
-uncovered leagues are described in \S\ref{sec:squad}. No market-value data is
-used anywhere.
+faithful on this point.) Player-level performance over the 2025--26 club
+season comes from the npxG family of metrics across the big five European
+leagues: FBref's Opta-sourced tables (npxG+xAG, plus goalkeeper post-shot
+expected goals) \cite{fbref} where available, with Understat (npxG+xA)
+\cite{understat} as an equivalent source --- both are standardised within
+their own player pool, so the composite scale is invariant to which one feeds
+it. Coverage tiers and the fallback for squads based in uncovered leagues are
+described in \S\ref{sec:squad}. No market-value data is used anywhere.
 
 \subsection{Bookmaker odds and club data}
 Outright championship odds across bookmakers are snapshotted from The Odds API
@@ -139,8 +141,9 @@ informative about team strength as competitive ones, so they enter the
 likelihood at full weight.
 
 \section{Squad-Quality Composite}\label{sec:squad}
-Each player's quality is the league-pooled $z$-score of npxG+xAG per 90
-minutes over the 2025--26 club season (minimum 450 minutes). Squad composites
+Each player's quality is the league-pooled $z$-score of non-penalty expected
+goal involvement per 90 minutes (npxG+xAG from \cite{fbref}, or npxG+xA from
+\cite{understat}) over the 2025--26 club season (minimum 450 minutes). Squad composites
 aggregate player quality using \emph{expected tournament minutes} as weights.
 Expected minutes follow a depth-chart heuristic on a 4-3-3 baseline: within
 each position group, starters are the most-capped players; goalkeepers play

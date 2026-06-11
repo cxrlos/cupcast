@@ -32,19 +32,20 @@ The `data/` directory is never committed (licensed/fetched datasets). Either cop
 from an existing machine, or rebuild it:
 
 ```sh
-uv run python -m cupcast.fetch.pull run --from 2022 --to 2024  # API-Football (~30 requests, ledgered)
-uv run python -c 'from cupcast.fetch.martj42 import fetch_results_csv; fetch_results_csv()'
-uv run python -m cupcast.fetch.squads          # confirmed 26-man squads
-uv run python -m cupcast.fetch.football_data   # club results + closing odds
-uv run python -m cupcast.fetch.fbref           # 2025-26 player metrics (slow; drives a browser)
+make doctor          # preflight: keys, per-source reachability, cache state
+make all-data        # every fetcher, per-step isolation, end summary
+make all-data-force  # re-download refreshable caches (API-Football stays ledgered)
 ```
 
-The last two fail on networks that filter football-data.co.uk or kill unsigned
-browser drivers (typical corporate setups) — run them from an unmanaged machine.
-The FBref pull drives a real browser: install Chromium first (`pacman -S chromium`
-on Arch, `brew install --cask chromium` on macOS). Building the papers needs
-`tectonic` (in the Arch repos and Homebrew). All fetchers are cache-first:
-rerunning never refetches what exists.
+Required sources: API-Football (key, ledgered), the martj42 results dataset,
+Wikipedia squads, and Understat (player npxG+xA — feeds the squad composite).
+Optional: football-data.co.uk (club closing odds for the validation tier),
+The Odds API (key; market comparison), and FBref (goalkeeper data for the
+shootout adjustment; drives a real browser — install Chrome/Chromium first).
+Filtered corporate networks block some sources; `make doctor` shows exactly
+which, with redirect chains. Building the papers needs `tectonic` (in the
+Arch repos and Homebrew). All fetchers are cache-first: rerunning never
+refetches what exists.
 
 ### The forecast
 
