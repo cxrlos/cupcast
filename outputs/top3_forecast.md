@@ -2,39 +2,39 @@
 
 ## Champion
 
-- Argentina: 17.1%
-- Spain: 15.9%
-- Brazil: 9.4%
-- England: 8.3%
-- France: 7.3%
+- Argentina: 16.3%
+- Spain: 15.0%
+- Brazil: 9.3%
+- England: 8.4%
+- France: 7.1%
 
 ## Runner-up
 
-- Spain: 9.6%
-- Argentina: 8.7%
+- Spain: 9.0%
+- Argentina: 8.5%
 - Brazil: 7.1%
 - England: 7.0%
-- France: 6.6%
+- France: 6.3%
 
 ## Third place
 
-- Argentina: 8.7%
-- Brazil: 8.2%
-- Spain: 7.7%
-- England: 7.1%
-- France: 7.0%
+- Argentina: 8.5%
+- Brazil: 8.0%
+- Spain: 7.5%
+- England: 7.0%
+- France: 6.8%
 
 ## Most likely podiums (joint)
 
 | Champion | Runner-up | Third | Probability |
 |---|---|---|---|
-| Argentina | Spain | Brazil | 0.520% |
-| Spain | Argentina | Brazil | 0.440% |
-| Argentina | Spain | France | 0.348% |
-| Argentina | Spain | England | 0.344% |
-| Spain | Argentina | France | 0.342% |
-| Spain | England | Argentina | 0.288% |
-| Argentina | Spain | Germany | 0.278% |
-| Spain | Argentina | England | 0.266% |
-| Spain | Brazil | Argentina | 0.232% |
-| Spain | Argentina | Germany | 0.228% |
+| Argentina | Spain | Brazil | 0.454% |
+| Spain | Argentina | Brazil | 0.382% |
+| Argentina | Spain | England | 0.320% |
+| Argentina | Spain | France | 0.314% |
+| Spain | Argentina | France | 0.262% |
+| Spain | Argentina | England | 0.260% |
+| Spain | England | Argentina | 0.260% |
+| Spain | Brazil | Argentina | 0.254% |
+| Argentina | Spain | Germany | 0.226% |
+| Argentina | Spain | Netherlands | 0.202% |

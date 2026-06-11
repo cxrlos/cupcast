@@ -4,23 +4,31 @@
 
 | team          |   p_champion |   p_champ_if_group_win |   p_champ_if_runner_up |   p_champ_if_third |
 |:--------------|-------------:|-----------------------:|-----------------------:|-------------------:|
-| Spain         |       0.1591 |                 0.1659 |                 0.1396 |             0.1515 |
-| Argentina     |       0.171  |                 0.1807 |                 0.1476 |             0.1745 |
-| England       |       0.0826 |                 0.0907 |                 0.0705 |             0.0757 |
-| Japan         |       0.0181 |                 0.0256 |                 0.0181 |             0.0203 |
-| France        |       0.0729 |                 0.0826 |                 0.0678 |             0.0712 |
-| Brazil        |       0.0944 |                 0.093  |                 0.1061 |             0.0842 |
-| United States |       0.0031 |                 0.0055 |                 0.0044 |             0.0032 |
-| Mexico        |       0.0082 |                 0.0091 |                 0.0095 |             0.0071 |
+| Spain         |       0.15   |                 0.1571 |                 0.1329 |             0.1298 |
+| Argentina     |       0.1629 |                 0.172  |                 0.1452 |             0.1684 |
+| England       |       0.084  |                 0.0923 |                 0.071  |             0.0827 |
+| Japan         |       0.0183 |                 0.0252 |                 0.0186 |             0.0223 |
+| France        |       0.0709 |                 0.0826 |                 0.0621 |             0.073  |
+| Brazil        |       0.0926 |                 0.0925 |                 0.0993 |             0.0906 |
+| United States |       0.0037 |                 0.0061 |                 0.0046 |             0.0047 |
+| Mexico        |       0.0082 |                 0.0094 |                 0.0085 |             0.0082 |
 
 Conditioning is over the same 50k simulations; finishing third forces a
 tougher bracket path, which is the gap between the columns.
 
 ## Key-player scenarios
 
-- skipped: Rodri out (needs FBref player data)
-- skipped: Lamine Yamal out (needs FBref player data)
-- skipped: Bellingham at 70 percent (needs FBref player data)
-- skipped: Messi limited to ~60 minutes (needs FBref player data)
-- skipped: Mbappé out (needs FBref player data)
-- skipped: Vinícius Júnior out (needs FBref player data)
+| scenario                     | team      |   p_champion_before |   p_champion_after |   delta_champion |   delta_sf |   delta_final |
+|:-----------------------------|:----------|--------------------:|-------------------:|-----------------:|-----------:|--------------:|
+| Rodri out                    | Spain     |              0.15   |             0.1495 |          -0.0005 |     0.0031 |        0.0003 |
+| Lamine Yamal out             | Spain     |              0.15   |             0.1473 |          -0.0027 |    -0.0023 |       -0.0025 |
+| Bellingham at 70 percent     | England   |              0.084  |             0.0829 |          -0.001  |    -0.0044 |       -0.0016 |
+| Messi limited to ~60 minutes | Argentina |              0.1629 |             0.1627 |          -0.0002 |     0.0002 |        0.0018 |
+| Mbappé out                   | France    |              0.0709 |             0.0707 |          -0.0002 |     0.0008 |        0.0007 |
+| Vinícius Júnior out          | Brazil    |              0.0926 |             0.0935 |           0.0009 |     0.0014 |        0.0019 |
+
+Each scenario reweights the squad's expected minutes (next player up
+within the position absorbs the freed minutes), rebuilds the squad
+composite and the shrinkage prior, and reruns the same seeded 50k
+simulation. Deltas are read against the baseline run.
+
