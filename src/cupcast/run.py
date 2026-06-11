@@ -42,7 +42,7 @@ def load_composites() -> pd.DataFrame | None:
         print("squad composites unavailable (no squads.csv); Elo-only priors")
         return None
     if composites["composite"].isna().all():
-        print("no FBref player data found; falling back to Elo-only priors")
+        print("no player data found (FBref or Understat); falling back to Elo-only priors")
         return None
     covered = int((composites["coverage"] >= 0.35).sum())
     print(f"squad composites: {covered}/48 teams above coverage threshold")

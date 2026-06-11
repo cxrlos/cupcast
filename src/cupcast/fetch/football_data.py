@@ -36,20 +36,26 @@ def fetch_season_csv(
     division: str,
     cache_dir: str | Path = "data/raw/football_data",
     session: requests.Session | None = None,
+    refresh: bool = False,
 ) -> str:
     cache_path = Path(cache_dir) / f"{season_code(start_year)}_{division}.csv"
-    if cache_path.exists():
+    if cache_path.exists() and not refresh:
         return cache_path.read_text(errors="replace")
     ensure_system_certificates()
     response = (session or requests).get(
-        f"{BASE_URL}/{season_code(start_year)}/{division}.csv", timeout=30
+        f"{BASE_URL}/{season_code(start_year)}/{division}.csv",
+        timeout=30,
+        headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) cupcast/0.1"},
     )
     response.raise_for_status()
-    text = response.content.decode("latin-1")
-    if not text.lstrip().startswith("Div,"):
+    text = response.content.decode("latin-1").lstrip("﻿ï»¿\r\n ")
+    first_line = text.splitlines()[0] if text else ""
+    if "Div" not in first_line or "HomeTeam" not in first_line:
+        redirects = " -> ".join(r.url for r in response.history) or "none"
         raise OSError(
-            f"{division} {start_year}: response is not a football-data.co.uk CSV "
-            "(network filter or changed URL?); nothing cached"
+            f"{division} {start_year}: response is not a football-data.co.uk CSV. "
+            f"Final URL: {response.url} (redirects: {redirects}); "
+            f"starts with: {text[:80]!r}; nothing cached"
         )
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_text(text)
@@ -79,20 +85,24 @@ def load_matches(
     return pd.concat(frames, ignore_index=True)
 
 
-def main() -> None:
+def main(refresh: bool = False) -> None:
     fetched, failed = 0, []
     for year in range(2015, 2026):
         for division in DIVISIONS:
             try:
-                fetch_season_csv(year, division)
+                fetch_season_csv(year, division, refresh=refresh)
                 fetched += 1
             except Exception as exc:  # noqa: BLE001 — keep pulling the rest
                 failed.append(f"{division} {year}: {exc}")
     print(f"cached {fetched} season files")
     for line in failed:
         print(f"FAILED {line}")
+    if failed and fetched == 0:
+        raise OSError(
+            f"all {len(failed)} downloads failed; first error: {failed[0]}"
+        )
     if failed:
-        print("(blocked-network failures? rerun off the corporate proxy)")
+        print("(partial failures above; rerun to retry just those)")
 
 
 if __name__ == "__main__":

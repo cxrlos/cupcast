@@ -111,12 +111,14 @@ def parse_squads(wikitext: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def load_squads(cache_dir: str | Path = "data/raw/wikipedia") -> pd.DataFrame:
-    return parse_squads(fetch_squads_wikitext(cache_dir))
+def load_squads(
+    cache_dir: str | Path = "data/raw/wikipedia", refresh: bool = False
+) -> pd.DataFrame:
+    return parse_squads(fetch_squads_wikitext(cache_dir, refresh=refresh))
 
 
-def main() -> None:
-    squads = load_squads()
+def main(refresh: bool = False) -> None:
+    squads = load_squads(refresh=refresh)
     out = Path("data/processed/squads.csv")
     out.parent.mkdir(parents=True, exist_ok=True)
     squads.to_csv(out, index=False)

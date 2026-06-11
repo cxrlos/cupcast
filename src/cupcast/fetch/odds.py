@@ -87,9 +87,9 @@ def outright_table(refresh: bool = False) -> pd.DataFrame:
     return consensus.sort_values("market_p_champion", ascending=False, ignore_index=True)
 
 
-def main() -> None:
+def main(refresh: bool = False) -> None:
     PROCESSED.mkdir(parents=True, exist_ok=True)
-    consensus = outright_table()
+    consensus = outright_table(refresh)
     out = PROCESSED / "market_outrights.csv"
     consensus.to_csv(out, index=False)
     print(f"{len(consensus)} teams -> {out}")

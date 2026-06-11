@@ -13,13 +13,19 @@ test:
 lint:
 	uv run ruff check src tests
 
-# One-time data build on a fresh (unmanaged) machine.
+# Every fetcher with per-step isolation and an end summary. Safe to run on
+# any machine: blocked sources fail individually, everything else proceeds.
 all-data:
-	uv run python -m cupcast.fetch.pull run --from 2022 --to 2024
-	uv run python -c 'from cupcast.fetch.martj42 import fetch_results_csv; fetch_results_csv()'
-	uv run python -m cupcast.fetch.squads
-	uv run python -m cupcast.fetch.football_data
-	uv run python -m cupcast.fetch.fbref
+	uv run python -m cupcast.fetch.all
+
+# Re-download refreshable caches (API-Football stays cache-first to protect
+# the request ledger).
+all-data-force:
+	uv run python -m cupcast.fetch.all --force
+
+# Diagnose keys, per-source reachability (with redirect chains), cache state.
+doctor:
+	uv run python -m cupcast.fetch.all --doctor
 
 # Run-day: refresh results to the latest matches, snapshot odds (skipped if no
 # key), regenerate every output and paper fragment, rebuild the PDFs.

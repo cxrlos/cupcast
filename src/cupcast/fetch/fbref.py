@@ -14,13 +14,13 @@ SEASON = "2025-2026"
 STAT_TYPES = ("standard", "defense", "keeper_adv")
 
 
-def pull_player_season_stats() -> dict[str, pd.DataFrame]:
+def pull_player_season_stats(refresh: bool = False) -> dict[str, pd.DataFrame]:
     # FBref sits behind a Cloudflare challenge, so soccerdata drives a real
     # browser. Endpoint-security tooling on managed machines kills the
     # bundled driver: run this on an unmanaged machine, then sync data/.
     import soccerdata as sd
 
-    fbref = sd.FBref(leagues=LEAGUES, seasons=SEASON, data_dir=DATA_DIR)
+    fbref = sd.FBref(leagues=LEAGUES, seasons=SEASON, data_dir=DATA_DIR, no_cache=refresh)
     frames = {}
     for stat_type in STAT_TYPES:
         frames[stat_type] = fbref.read_player_season_stats(stat_type=stat_type)
@@ -38,10 +38,10 @@ def flatten_columns(frame: pd.DataFrame) -> pd.DataFrame:
     return frame
 
 
-def main() -> None:
+def main(refresh: bool = False) -> None:
     warnings.filterwarnings("ignore")
     PROCESSED.mkdir(parents=True, exist_ok=True)
-    for stat_type, frame in pull_player_season_stats().items():
+    for stat_type, frame in pull_player_season_stats(refresh).items():
         out = PROCESSED / f"fbref_{stat_type}_2025_26.csv"
         flatten_columns(frame).to_csv(out, index=False)
         print(f"{stat_type}: {frame.shape[0]} player rows -> {out}")

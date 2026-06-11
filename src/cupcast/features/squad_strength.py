@@ -9,6 +9,7 @@ import pandas as pd
 from cupcast.features.expected_minutes import expected_minutes_per_match
 
 FBREF_STANDARD = Path("data/processed/fbref_standard_2025_26.csv")
+UNDERSTAT_PLAYERS = Path("data/processed/understat_players_2025_26.csv")
 SQUADS = Path("data/processed/squads.csv")
 # Below this share of expected minutes matched to player data, the squad
 # composite is unreliable and the team falls back to the Elo-only prior tier.
@@ -29,6 +30,19 @@ def _find_column(frame: pd.DataFrame, *fragments: str) -> str | None:
     return None
 
 
+def _standardize(frame: pd.DataFrame) -> pd.DataFrame:
+    frame["minutes"] = pd.to_numeric(frame["minutes"], errors="coerce")
+    frame["quality_per90"] = pd.to_numeric(frame["quality_per90"], errors="coerce")
+    frame = frame.dropna().query("minutes >= @MIN_PLAYER_MINUTES").copy()
+    frame["key"] = frame["player"].map(normalize_name)
+    # A duplicate key usually means a mid-season transfer: keep the larger sample.
+    frame = frame.sort_values("minutes", ascending=False).drop_duplicates("key")
+    frame["quality_z"] = (
+        frame["quality_per90"] - frame["quality_per90"].mean()
+    ) / frame["quality_per90"].std()
+    return frame[["key", "quality_z", "minutes"]]
+
+
 def load_fbref_standard(path: Path = FBREF_STANDARD) -> pd.DataFrame | None:
     if not path.exists():
         return None
@@ -43,16 +57,29 @@ def load_fbref_standard(path: Path = FBREF_STANDARD) -> pd.DataFrame | None:
         )
     frame = raw[[player_col, minutes_col, quality_col]].copy()
     frame.columns = ["player", "minutes", "quality_per90"]
-    frame["minutes"] = pd.to_numeric(frame["minutes"], errors="coerce")
-    frame["quality_per90"] = pd.to_numeric(frame["quality_per90"], errors="coerce")
-    frame = frame.dropna().query("minutes >= @MIN_PLAYER_MINUTES")
-    frame["key"] = frame["player"].map(normalize_name)
-    # A duplicate key usually means a mid-season transfer: keep the larger sample.
-    frame = frame.sort_values("minutes", ascending=False).drop_duplicates("key")
-    frame["quality_z"] = (
-        frame["quality_per90"] - frame["quality_per90"].mean()
-    ) / frame["quality_per90"].std()
-    return frame[["key", "quality_z", "minutes"]]
+    return _standardize(frame)
+
+
+def load_understat_players(path: Path = UNDERSTAT_PLAYERS) -> pd.DataFrame | None:
+    if not path.exists():
+        return None
+    raw = pd.read_csv(path)
+    frame = raw[["player", "minutes", "quality_per90"]].copy()
+    return _standardize(frame)
+
+
+def load_player_quality(
+    fbref_path: Path = FBREF_STANDARD, understat_path: Path = UNDERSTAT_PLAYERS
+) -> pd.DataFrame | None:
+    # FBref (npxG+xAG) preferred; Understat (npxG+xA) is the no-browser
+    # fallback with the same league coverage. Both are z-scored within their
+    # own pool, so the composite scale is consistent either way.
+    players = load_fbref_standard(fbref_path)
+    if players is None or players.empty:
+        players = load_understat_players(understat_path)
+    if players is None or players.empty:
+        return None
+    return players
 
 
 def squad_composites(
@@ -71,7 +98,7 @@ def squad_composites(
         squads = expected_minutes_per_match(pd.read_csv(squads_path))
     squads = squads.copy()
     squads["key"] = squads["name"].map(normalize_name)
-    players = load_fbref_standard(fbref_path)
+    players = load_player_quality(fbref_path)
     rows = []
     for team, group in squads.groupby("team"):
         weights = group["minutes_weight"].to_numpy()
