@@ -40,7 +40,10 @@ def run_tournament(fit: DixonColesFit, n_sims: int = 50_000, seed: int = 2026) -
 
 
 def simulate_tournament(
-    fit: DixonColesFit, n_sims: int = 50_000, seed: int = 2026
+    fit: DixonColesFit,
+    n_sims: int = 50_000,
+    seed: int = 2026,
+    gk_z: dict[str, float] | None = None,
 ) -> TournamentDetails:
     rng = np.random.default_rng(seed)
     team_id = {team: i for i, team in enumerate(ALL_TEAMS)}
@@ -98,7 +101,7 @@ def simulate_tournament(
             return runners[GROUP_LETTERS.index(value)]
         return slot_team[match]
 
-    sampler = KnockoutSampler(fit, ALL_TEAMS)
+    sampler = KnockoutSampler(fit, ALL_TEAMS, gk_z)
     match_winner: dict[int, np.ndarray] = {}
     match_loser: dict[int, np.ndarray] = {}
 

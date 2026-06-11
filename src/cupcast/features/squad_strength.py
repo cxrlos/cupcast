@@ -56,7 +56,9 @@ def load_fbref_standard(path: Path = FBREF_STANDARD) -> pd.DataFrame | None:
 
 
 def squad_composites(
-    squads_path: Path = SQUADS, fbref_path: Path = FBREF_STANDARD
+    squads: pd.DataFrame | None = None,
+    squads_path: Path = SQUADS,
+    fbref_path: Path = FBREF_STANDARD,
 ) -> pd.DataFrame:
     """Minutes-weighted squad quality per team, with match coverage.
 
@@ -65,7 +67,9 @@ def squad_composites(
     (share of expected minutes matched to player data), and mean age weighted
     by expected minutes. Composite is NaN when no player data is available.
     """
-    squads = expected_minutes_per_match(pd.read_csv(squads_path))
+    if squads is None:
+        squads = expected_minutes_per_match(pd.read_csv(squads_path))
+    squads = squads.copy()
     squads["key"] = squads["name"].map(normalize_name)
     players = load_fbref_standard(fbref_path)
     rows = []

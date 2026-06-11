@@ -13,19 +13,28 @@ from cupcast.validate.metrics import summarize
 WEIGHT_FLOOR = 1e-4
 
 
-def fit_as_of(
+def training_set(
     table: pd.DataFrame,
     as_of: pd.Timestamp,
     half_life_years: float,
     friendly_weight: float,
-) -> DixonColesFit:
+) -> tuple[pd.DataFrame, np.ndarray]:
     train = table[table["date"] < as_of].copy()
     train["host_home"] = ~train["neutral"].astype(bool)
     weights = match_weights(
         train["date"], as_of, train["friendly"], half_life_years, friendly_weight
     )
     keep = weights > WEIGHT_FLOOR
-    return fit_dixon_coles(train[keep], weights[keep])
+    return train[keep], weights[keep]
+
+
+def fit_as_of(
+    table: pd.DataFrame,
+    as_of: pd.Timestamp,
+    half_life_years: float,
+    friendly_weight: float,
+) -> DixonColesFit:
+    return fit_dixon_coles(*training_set(table, as_of, half_life_years, friendly_weight))
 
 
 def predict_matches(fit: DixonColesFit, matches: pd.DataFrame) -> pd.DataFrame:
@@ -91,6 +100,48 @@ def evaluate_folds(
         ]
         frames.append(predict_matches(fit, window))
     return pd.concat(frames, ignore_index=True)
+
+
+def tune_shrinkage(
+    table: pd.DataFrame,
+    full_table: pd.DataFrame,
+    folds: list[Fold],
+    ks: tuple[float, ...] = (0.0, 10.0, 25.0, 50.0, 100.0),
+    half_life_years: float = 2.5,
+    friendly_weight: float = 1.0,
+) -> pd.DataFrame:
+    from cupcast.model.shrinkage import (
+        apply_shrinkage,
+        effective_matches,
+        regression_priors,
+    )
+    from cupcast.ratings.history import elo_history
+
+    prepared = []
+    for fold in folds:
+        train, weights = training_set(
+            table, fold.train_until, half_life_years, friendly_weight
+        )
+        fit = fit_dixon_coles(train, weights)
+        elo, _ = elo_history(full_table[full_table["date"] < fold.train_until])
+        n_eff = effective_matches(train, weights, fit.teams)
+        priors = regression_priors(fit, n_eff, elo)
+        window = table[
+            (table["date"] >= fold.train_until) & (table["date"] < fold.eval_until)
+        ]
+        prepared.append((fit, n_eff, priors, window))
+
+    rows = []
+    for k in ks:
+        frames = []
+        for fit, n_eff, (att_prior, def_prior), window in prepared:
+            candidate = (
+                apply_shrinkage(fit, n_eff, att_prior, def_prior, k) if k > 0 else fit
+            )
+            frames.append(predict_matches(candidate, window))
+        pooled = pd.concat(frames, ignore_index=True)
+        rows.append({"k": k, **summarize(*prob_array(pooled))})
+    return pd.DataFrame(rows).sort_values("log_loss", ignore_index=True)
 
 
 def tune_decay(

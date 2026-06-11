@@ -22,7 +22,7 @@ AS_OF = pd.Timestamp("2026-06-11")
 OUTPUTS = Path("outputs")
 
 
-def build_fit(as_of: pd.Timestamp = AS_OF):
+def build_components(as_of: pd.Timestamp = AS_OF):
     table = build_match_table(since="2015-01-01")
     table = table[table["date"] < as_of].copy()
     table["host_home"] = ~table["neutral"].astype(bool)
@@ -31,21 +31,32 @@ def build_fit(as_of: pd.Timestamp = AS_OF):
 
     elo_table = build_match_table()  # full history for converged ratings
     elo_ratings, _ = elo_history(elo_table[elo_table["date"] < as_of])
+    n_eff = effective_matches(table, weights, fit.teams)
+    return fit, n_eff, elo_ratings
 
+
+def load_composites() -> pd.DataFrame | None:
     try:
         composites = squad_composites()
-        covered = int((composites["coverage"] >= 0.35).sum())
-        print(f"squad composites: {covered}/48 teams above coverage threshold")
     except FileNotFoundError:
-        composites = None
         print("squad composites unavailable (no squads.csv); Elo-only priors")
-    if composites is not None and composites["composite"].isna().all():
+        return None
+    if composites["composite"].isna().all():
         print("no FBref player data found; falling back to Elo-only priors")
-        composites = None
+        return None
+    covered = int((composites["coverage"] >= 0.35).sum())
+    print(f"squad composites: {covered}/48 teams above coverage threshold")
+    return composites
 
-    n_eff = effective_matches(table, weights, fit.teams)
+
+def shrunk_fit(fit, n_eff, elo_ratings, composites):
     attack_prior, defense_prior = regression_priors(fit, n_eff, elo_ratings, composites)
     return apply_shrinkage(fit, n_eff, attack_prior, defense_prior)
+
+
+def build_fit(as_of: pd.Timestamp = AS_OF):
+    fit, n_eff, elo_ratings = build_components(as_of)
+    return shrunk_fit(fit, n_eff, elo_ratings, load_composites())
 
 
 def main() -> None:

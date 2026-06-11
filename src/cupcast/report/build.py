@@ -10,12 +10,17 @@ import pandas as pd
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
+from cupcast.features.goalkeepers import keeper_zscores  # noqa: E402
 from cupcast.features.matches import build_match_table  # noqa: E402
 from cupcast.report.match_predictions import (  # noqa: E402
     group_stage_predictions,
     knockout_projections,
 )
-from cupcast.run import AS_OF, build_fit  # noqa: E402
+from cupcast.report.sensitivity import (  # noqa: E402
+    conditional_paths,
+    run_player_scenarios,
+)
+from cupcast.run import AS_OF, build_components, load_composites, shrunk_fit  # noqa: E402
 from cupcast.sim.monte_carlo import simulate_tournament  # noqa: E402
 from cupcast.sim.worldcup2026 import ALL_TEAMS  # noqa: E402
 from cupcast.validate.backtest import evaluate_folds, prob_array, rolling_folds  # noqa: E402
@@ -25,11 +30,18 @@ from cupcast.validate.tournaments import replay_report  # noqa: E402
 
 OUTPUTS = Path("outputs")
 FIGURES = Path("docs/tex/figures")
+GENERATED = Path("docs/tex/generated")
 MARKET_CSV = Path("data/processed/market_outrights.csv")
 
 
-def fmt(value: float) -> str:
-    return f"{value:.3f}"
+def write_fragment(name: str, content: str) -> None:
+    GENERATED.mkdir(parents=True, exist_ok=True)
+    (GENERATED / name).write_text(content + "\n")
+
+
+def latex_table(frame: pd.DataFrame, columns: dict[str, str], digits: int = 3) -> str:
+    renamed = frame[list(columns)].rename(columns=columns)
+    return renamed.to_latex(index=False, float_format=f"%.{digits}f")
 
 
 def podium_section(details) -> str:
@@ -109,6 +121,38 @@ def write_top3(details) -> None:
     lines.append(podium_section(details))
     (OUTPUTS / "top3_forecast.md").write_text("\n".join(lines) + "\n")
 
+    write_fragment(
+        "forecast_headline.tex",
+        latex_table(
+            table.head(12),
+            {
+                "team": "Team",
+                "p_qualify": "R32",
+                "p_qf": "QF",
+                "p_sf": "SF",
+                "p_final": "Final",
+                "p_champion": "Champion",
+            },
+        ),
+    )
+    champion = details.match_winner[104]
+    runner = details.match_loser[104]
+    third = details.match_winner[103]
+    triples = pd.DataFrame(
+        {
+            "Champion": [ALL_TEAMS[i] for i in champion],
+            "Runner-up": [ALL_TEAMS[i] for i in runner],
+            "Third": [ALL_TEAMS[i] for i in third],
+        }
+    )
+    podium = (
+        triples.value_counts(normalize=True).head(8).rename("Probability").reset_index()
+    )
+    write_fragment(
+        "forecast_podium.tex",
+        podium.to_latex(index=False, float_format="%.4f"),
+    )
+
 
 def write_executive_summary(details) -> None:
     table = details.table.set_index("team")
@@ -155,6 +199,11 @@ def write_executive_summary(details) -> None:
 def write_market_comparison(details) -> None:
     if not MARKET_CSV.exists():
         print("market_outrights.csv missing — skipping market comparison (run fetch.odds)")
+        write_fragment(
+            "market_comparison.tex",
+            "\\emph{Market snapshot pending: run \\texttt{cupcast.fetch.odds} "
+            "and rebuild reports.}",
+        )
         return
     market = pd.read_csv(MARKET_CSV)
     merged = details.table[["team", "p_champion"]].merge(market, on="team", how="left")
@@ -168,12 +217,102 @@ def write_market_comparison(details) -> None:
         market_p = "-" if pd.isna(row.market_p_champion) else f"{row.market_p_champion:.1%}"
         lines.append(f"| {row.team} | {row.p_champion:.1%} | {market_p} | {row.edge:+.1%} |")
     (OUTPUTS / "market_comparison.md").write_text("\n".join(lines) + "\n")
+    write_fragment(
+        "market_comparison.tex",
+        latex_table(
+            merged.head(15),
+            {
+                "team": "Team",
+                "p_champion": "Model",
+                "market_p_champion": "Market",
+                "edge": "Edge",
+            },
+        ),
+    )
+
+
+def write_sensitivity(fit, n_eff, elo_ratings, details, n_sims: int, seed: int) -> None:
+    lines = ["# Sensitivity analysis", ""]
+    lines += [
+        "## Path dependence: P(champion | group-stage outcome)",
+        "",
+        conditional_paths(details).round(4).to_markdown(index=False),
+        "",
+        "Conditioning is over the same 50k simulations; finishing third forces a",
+        "tougher bracket path, which is the gap between the columns.",
+        "",
+    ]
+    scenarios, skipped = run_player_scenarios(
+        fit, n_eff, elo_ratings, details, n_sims=n_sims, seed=seed
+    )
+    lines.append("## Key-player scenarios")
+    lines.append("")
+    if not scenarios.empty:
+        lines += [scenarios.round(4).to_markdown(index=False), ""]
+        lines += [
+            "Each scenario reweights the squad's expected minutes (next player up",
+            "within the position absorbs the freed minutes), rebuilds the squad",
+            "composite and the shrinkage prior, and reruns the same seeded 50k",
+            "simulation. Deltas are read against the baseline run.",
+            "",
+        ]
+        write_fragment(
+            "sensitivity_scenarios.tex",
+            latex_table(
+                scenarios,
+                {
+                    "scenario": "Scenario",
+                    "p_champion_before": "Before",
+                    "p_champion_after": "After",
+                    "delta_champion": "$\\Delta$ champion",
+                    "delta_sf": "$\\Delta$ SF",
+                },
+                digits=4,
+            ),
+        )
+    else:
+        write_fragment(
+            "sensitivity_scenarios.tex",
+            "\\emph{Player scenarios pending FBref data: run "
+            "\\texttt{cupcast.fetch.fbref} and rebuild reports.}",
+        )
+    for item in skipped:
+        lines.append(f"- skipped: {item}")
+    (OUTPUTS / "sensitivity.md").write_text("\n".join(lines) + "\n")
+    write_fragment(
+        "sensitivity_conditional.tex",
+        latex_table(
+            conditional_paths(details),
+            {
+                "team": "Team",
+                "p_champion": "P(champ)",
+                "p_champ_if_group_win": "given 1st",
+                "p_champ_if_runner_up": "given 2nd",
+                "p_champ_if_third": "given 3rd q.",
+            },
+            digits=4,
+        ),
+    )
 
 
 def write_validation(table: pd.DataFrame) -> None:
     lines = ["# Validation", ""]
     replays = replay_report(table, 2.5, 1.0)
     lines += ["## Tournament replays (as-of training)", "", replays.to_markdown(index=False), ""]
+    write_fragment(
+        "validation_replays.tex",
+        latex_table(
+            replays,
+            {
+                "tournament": "Tournament",
+                "n": "n",
+                "log_loss": "Log-loss",
+                "brier": "Brier",
+                "rps": "RPS",
+                "log_loss_uniform": "Log-loss (uniform)",
+            },
+        ),
+    )
 
     predictions = evaluate_folds(table, rolling_folds("2022-01-01", "2026-06-01", 6), 2.5, 1.0)
     probs, outcome = prob_array(predictions)
@@ -195,6 +334,14 @@ def write_validation(table: pd.DataFrame) -> None:
     fig.savefig(FIGURES / "calibration.pdf")
     plt.close(fig)
 
+    write_fragment(
+        "validation_pooled.tex",
+        latex_table(
+            pd.DataFrame([pooled]),
+            {"n": "n", "log_loss": "Log-loss", "brier": "Brier", "rps": "RPS"},
+        ),
+    )
+
     if club_data_available():
         club_predictions = club_backtest()
         club_metrics = club_report(club_predictions)
@@ -204,6 +351,19 @@ def write_validation(table: pd.DataFrame) -> None:
             club_metrics.to_markdown(index=False),
             "",
         ]
+        write_fragment(
+            "club_tier.tex",
+            latex_table(
+                club_metrics,
+                {
+                    "forecaster": "Forecaster",
+                    "n": "n",
+                    "log_loss": "Log-loss",
+                    "brier": "Brier",
+                    "rps": "RPS",
+                },
+            ),
+        )
     else:
         lines += [
             "## Club tier",
@@ -211,6 +371,11 @@ def write_validation(table: pd.DataFrame) -> None:
             "_Club data not present; run `fetch.football_data` first._",
             "",
         ]
+        write_fragment(
+            "club_tier.tex",
+            "\\emph{Club-tier results pending: run \\texttt{cupcast.fetch.football\\_data} "
+            "and rebuild reports.}",
+        )
     (OUTPUTS / "validation.md").write_text("\n".join(lines) + "\n")
 
 
@@ -220,17 +385,23 @@ def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     np.random.seed(0)  # matplotlib jitter only; simulation seeds are explicit
 
-    fit = build_fit()
-    details = simulate_tournament(fit, n_sims=50_000, seed=2026)
+    n_sims, seed = 50_000, 2026
+    base_fit, n_eff, elo_ratings = build_components()
+    fit = shrunk_fit(base_fit, n_eff, elo_ratings, load_composites())
+    gk_z = keeper_zscores()
+    print(f"goalkeeper shootout adjustment: {len(gk_z)}/48 teams covered")
+    details = simulate_tournament(fit, n_sims=n_sims, seed=seed, gk_z=gk_z)
     details.table.round(5).to_csv(OUTPUTS / "simulation_results.csv", index=False)
 
     write_match_predictions(fit, details)
     write_top3(details)
     write_executive_summary(details)
     write_market_comparison(details)
+    write_sensitivity(base_fit, n_eff, elo_ratings, details, n_sims, seed)
     write_validation(build_match_table(since="2012-01-01"))
     print("wrote outputs/: simulation_results.csv, match_predictions(.md/.csv),")
-    print("  top3_forecast.md, executive_summary.md, validation.md, market_comparison(.md)")
+    print("  top3_forecast.md, executive_summary.md, sensitivity.md, validation.md,")
+    print("  market_comparison(.md) [if odds snapshot present]")
     print(f"figures: {FIGURES / 'calibration.pdf'}")
 
 

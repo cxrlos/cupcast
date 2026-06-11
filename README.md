@@ -49,10 +49,13 @@ rerunning never refetches what exists.
 ### The forecast
 
 ```sh
-uv run python -m cupcast.fetch.odds   # market snapshot (needs ODDS_API_KEY)
-uv run python -m cupcast.run          # fit -> shrink -> 50k simulations -> outputs/
+make all-data   # one-time on a fresh machine (see network notes above)
+make forecast   # refresh results, snapshot odds, 50k sims, all outputs, papers
 ```
 
+`make forecast` regenerates everything in `outputs/` (simulation results, all
+104 match predictions, top-3 forecast, sensitivity, validation, executive
+summary, market comparison) and rebuilds the three PDFs with the new numbers.
 Everything is CPU-bound numpy/scipy — no GPU involved — and the full pipeline
 runs in well under a minute once data is cached.
 

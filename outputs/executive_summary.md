@@ -4,27 +4,27 @@
 
 | Group | Winner pick | Runner-up pick | Third (qualify odds) |
 |---|---|---|---|
-| A | Mexico (57%) | South Korea (32%) | Czech Republic (69%) |
-| B | Switzerland (53%) | Canada (43%) | Bosnia and Herzegovina (48%) |
-| C | Brazil (61%) | Morocco (44%) | Scotland (66%) |
-| D | Turkey (31%) | Australia (25%) | Paraguay (67%) |
-| E | Germany (51%) | Ecuador (40%) | Ivory Coast (75%) |
-| F | Netherlands (49%) | Japan (35%) | Sweden (52%) |
-| G | Belgium (57%) | Iran (35%) | Egypt (68%) |
-| H | Spain (78%) | Uruguay (62%) | Saudi Arabia (34%) |
-| I | France (58%) | Norway (36%) | Senegal (72%) |
-| J | Argentina (76%) | Austria (39%) | Algeria (70%) |
-| K | Portugal (47%) | Colombia (38%) | Uzbekistan (41%) |
-| L | England (66%) | Croatia (50%) | Panama (44%) |
+| A | Mexico (54%) | South Korea (31%) | Czech Republic (70%) |
+| B | Switzerland (54%) | Canada (43%) | Bosnia and Herzegovina (50%) |
+| C | Brazil (63%) | Morocco (46%) | Scotland (68%) |
+| D | Turkey (29%) | Australia (25%) | United States (69%) |
+| E | Germany (53%) | Ecuador (40%) | Ivory Coast (78%) |
+| F | Netherlands (49%) | Japan (34%) | Sweden (54%) |
+| G | Belgium (60%) | Iran (36%) | Egypt (69%) |
+| H | Spain (77%) | Uruguay (60%) | Saudi Arabia (34%) |
+| I | France (56%) | Norway (36%) | Senegal (73%) |
+| J | Argentina (74%) | Austria (39%) | Algeria (72%) |
+| K | Portugal (49%) | Colombia (38%) | Uzbekistan (39%) |
+| L | England (66%) | Croatia (50%) | Panama (37%) |
 
 ## Knockout picks (advance the higher-probability side)
 
-- **Quarter-finalists**: Argentina, Spain, Brazil, France, England, Portugal, Colombia, Belgium
-- **Semi-finalists**: Spain, Argentina, Brazil, France
-- **Finalists**: Spain, Argentina
+- **Quarter-finalists**: Argentina, Spain, Brazil, England, France, Portugal, Belgium, Colombia
+- **Semi-finalists**: Argentina, Spain, Brazil, England
+- **Finalists**: Argentina, Spain
 
 ## Podium
 
-1. **Spain** (18.0%)
-2. **Argentina** (9.4%)
-3. **Brazil** (8.0%)
+1. **Argentina** (17.1%)
+2. **Spain** (9.6%)
+3. **Brazil** (8.2%)

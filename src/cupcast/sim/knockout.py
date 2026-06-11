@@ -5,12 +5,23 @@ import numpy as np
 from cupcast.model.dixon_coles import DixonColesFit
 from cupcast.sim.worldcup2026 import HOST_COUNTRIES
 
-PENALTY_SHOOTOUT_P = 0.5  # baseline; goalkeeper adjustment is a later refinement
 EXTRA_TIME_SCALE = 1.0 / 3.0
+# Keeper shot-stopping nudge on the shootout: one standard deviation of
+# PSxG+/- per 90 is worth ~2pp, capped at 5pp either way.
+GK_SHOOTOUT_BETA = 0.02
+GK_SHOOTOUT_CAP = 0.05
+
+
+def shootout_probability(gk_edge: float) -> float:
+    return 0.5 + float(np.clip(GK_SHOOTOUT_BETA * gk_edge, -GK_SHOOTOUT_CAP, GK_SHOOTOUT_CAP))
 
 
 def advance_probability(
-    fit: DixonColesFit, team: str, opponent: str, venue_country: str
+    fit: DixonColesFit,
+    team: str,
+    opponent: str,
+    venue_country: str,
+    gk_z: dict[str, float] | None = None,
 ) -> float:
     host_team = team in HOST_COUNTRIES and team == venue_country
     host_opp = opponent in HOST_COUNTRIES and opponent == venue_country
@@ -22,22 +33,34 @@ def advance_probability(
     )
     p_win_et = float(np.tril(extra, -1).sum())
     p_draw_et = float(np.trace(extra))
-    return p_win + p_draw * (p_win_et + p_draw_et * PENALTY_SHOOTOUT_P)
+    gk_z = gk_z or {}
+    p_shootout = shootout_probability(gk_z.get(team, 0.0) - gk_z.get(opponent, 0.0))
+    return p_win + p_draw * (p_win_et + p_draw_et * p_shootout)
 
 
 class KnockoutSampler:
     """Samples knockout winners across simulations, caching pair probabilities."""
 
-    def __init__(self, fit: DixonColesFit, team_names: tuple[str, ...]) -> None:
+    def __init__(
+        self,
+        fit: DixonColesFit,
+        team_names: tuple[str, ...],
+        gk_z: dict[str, float] | None = None,
+    ) -> None:
         self.fit = fit
         self.team_names = team_names
+        self.gk_z = gk_z or {}
         self._cache: dict[tuple[int, int, str], float] = {}
 
     def _advance_p(self, team_id: int, opp_id: int, venue_country: str) -> float:
         key = (team_id, opp_id, venue_country)
         if key not in self._cache:
             self._cache[key] = advance_probability(
-                self.fit, self.team_names[team_id], self.team_names[opp_id], venue_country
+                self.fit,
+                self.team_names[team_id],
+                self.team_names[opp_id],
+                venue_country,
+                self.gk_z,
             )
         return self._cache[key]
 

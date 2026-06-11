@@ -9,40 +9,65 @@
 \maketitle
 
 \begin{abstract}
-The forecast: per-match probabilities and expected scorelines for all matches of the
-2026 FIFA World Cup, advancement probabilities for all 48 teams, and the podium
-distribution from 50{,}000 Monte Carlo tournament simulations under the Dixon--Coles
-model \cite{dixoncoles1997} of Paper~I, validated in Paper~II. Includes sensitivity analysis to key-player
-availability and a comparison against bookmaker-implied probabilities.
+The forecast: advancement probabilities for all 48 teams and the podium
+distribution from 50{,}000 Monte Carlo simulations of the full 2026 FIFA World
+Cup under the Dixon--Coles model with squad-quality shrinkage \cite{dixoncoles1997}
+specified in Paper~I and validated in Paper~II, together with path-dependence
+and key-player sensitivity analyses and a comparison against bookmaker-implied
+probabilities. Per-match predictions for all 104 matches accompany this paper
+as machine-readable artifacts in the repository's \texttt{outputs/} directory.
 \end{abstract}
 
-\section{Introduction}
-\emph{To be written.}
-
 \section{Headline Forecast}
-% Champion, runner-up, third place with probabilities; the podium distribution.
-\emph{To be written.}
+Table positions are probabilities of reaching each stage, from 50{,}000 seeded
+simulations (every number in this paper regenerates from
+\texttt{python -m cupcast.report.build}):
 
-\section{Group Stage}
-% Per-group advancement probabilities, expected points, modal standings.
-\emph{To be written.}
+\input{../generated/forecast_headline.tex}
 
-\section{Knockout Rounds}
-% Bracket-path probabilities, R32 through final.
-\emph{To be written.}
+\section{The Podium}
+Ranking marginal probabilities per podium step gives the headline pick;
+the joint distribution below accounts for the fact that one team's podium
+finish constrains the others' (the third step is decided by the actual
+third-place play-off in every simulation):
 
-\section{Sensitivity Analysis}
-% Key-player perturbations (expected-minutes shocks), group-upset scenarios,
-% parameter-uncertainty bands.
-\emph{To be written.}
+\input{../generated/forecast_podium.tex}
 
-\section{Model vs Market}
-% Largest disagreements with bookmaker-implied probabilities and whether they are
-% defensible.
-\emph{To be written.}
+\section{Path Dependence}
+Group-stage outcomes reshape each contender's bracket path. The conditional
+championship probabilities below are computed within the same simulation set;
+the gap between finishing first and third in the group is the price of the
+harder Round-of-32 draw under the official bracket:
+
+\input{../generated/sensitivity_conditional.tex}
+
+\section{Key-Player Sensitivity}
+Each scenario removes or limits a named player, reallocates his expected
+minutes to the next players in the position group, rebuilds the squad
+composite and shrinkage prior of Paper~I \S6, and reruns the identical seeded
+simulation; deltas are therefore attributable to the player, not Monte Carlo
+noise:
+
+\input{../generated/sensitivity_scenarios.tex}
+
+\section{Model versus Market}
+Consensus bookmaker championship probabilities (outright odds across books,
+proportional overround removal \cite{oddsapi}) against the model, sorted by
+absolute disagreement:
+
+\input{../generated/market_comparison.tex}
+
+Where the model and the market disagree materially, the burden of proof sits
+with the model; the largest edges are discussed alongside the executive
+summary in \texttt{outputs/}.
 
 \section{Limitations}
-\emph{To be written.}
+Expected minutes use a caps-based depth heuristic (Paper~I \S5) --- researched
+likely line-ups for the main contenders are the highest-value refinement.
+Fair-play tiebreakers are replaced by lots; rest days and travel distance are
+not modelled; squad composites cover only players in the big five European
+leagues, with Elo carrying the remainder. The market comparison reflects a
+single pre-tournament odds snapshot.
 
 \bibliographystyle{abbrvnat}
 \bibliography{references}

@@ -8,9 +8,11 @@ import pandas as pd
 from cupcast.model.dixon_coles import DixonColesFit
 
 # Effective-match count at which fitted ratings and the prior carry equal
-# weight. International regulars accumulate ~40+ effective matches under the
-# tuned decay, so shrinkage mainly moves thin-history teams.
-DEFAULT_K = 25.0
+# weight. Tuned on rolling out-of-sample folds 2022-2026 (n=4167): k=10 gave
+# the best log-loss (0.8615 vs 0.8623 unshrunk); k>=25 was worse than no
+# shrinkage at all. Light shrinkage only — the prior earns its keep on
+# thin-history teams and must not drag established ones.
+DEFAULT_K = 10.0
 
 
 def effective_matches(table: pd.DataFrame, weights: np.ndarray, teams: tuple[str, ...]):
