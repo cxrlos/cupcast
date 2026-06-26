@@ -1,6 +1,6 @@
 import pytest
 
-from cupcast.fetch import all as fetch_all
+from cupcast.v1.fetch import all as fetch_all
 
 
 def test_run_all_isolates_failures_and_flags_required(monkeypatch, capsys):

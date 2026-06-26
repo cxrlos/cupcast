@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from cupcast.features.expected_minutes import MATCH_MINUTES, expected_minutes_per_match
-from cupcast.model.dixon_coles import DixonColesFit
-from cupcast.report.sensitivity import adjust_minutes, conditional_paths, find_player
-from cupcast.sim.monte_carlo import simulate_tournament
-from cupcast.sim.worldcup2026 import ALL_TEAMS
+from cupcast.v1.features.expected_minutes import MATCH_MINUTES, expected_minutes_per_match
+from cupcast.v1.model.dixon_coles import DixonColesFit
+from cupcast.v1.report.sensitivity import adjust_minutes, conditional_paths, find_player
+from cupcast.v1.sim.monte_carlo import simulate_tournament
+from cupcast.v1.sim.worldcup2026 import ALL_TEAMS
 
 
 def squad_frame():

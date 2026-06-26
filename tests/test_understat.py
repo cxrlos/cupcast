@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from cupcast.features.squad_strength import load_player_quality, load_understat_players
-from cupcast.fetch.understat import to_players_table
+from cupcast.v1.features.squad_strength import load_player_quality, load_understat_players
+from cupcast.v1.fetch.understat import to_players_table
 
 
 def soccerdata_shaped_stats():

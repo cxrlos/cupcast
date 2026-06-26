@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from cupcast.features.goalkeepers import keeper_zscores
-from cupcast.sim.knockout import shootout_probability
+from cupcast.v1.features.goalkeepers import keeper_zscores
+from cupcast.v1.sim.knockout import shootout_probability
 
 
 def test_shootout_probability_symmetric_and_capped():

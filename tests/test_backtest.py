@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from cupcast.validate.backtest import fit_as_of, rolling_folds
+from cupcast.v1.validate.backtest import fit_as_of, rolling_folds
 
 
 def test_rolling_folds_are_contiguous_and_ordered():

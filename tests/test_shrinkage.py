@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from cupcast.model.dixon_coles import DixonColesFit
-from cupcast.model.shrinkage import (
+from cupcast.v1.model.dixon_coles import DixonColesFit
+from cupcast.v1.model.shrinkage import (
     apply_shrinkage,
     effective_matches,
     regression_priors,

@@ -1,7 +1,7 @@
 import pandas as pd
 
-from cupcast.features.matches import k_factor, restrict_to_fifa_pool
-from cupcast.ratings.elo import (
+from cupcast.v1.features.matches import k_factor, restrict_to_fifa_pool
+from cupcast.v1.ratings.elo import (
     K_CONTINENTAL,
     K_FRIENDLY,
     K_OTHER_TOURNAMENT,

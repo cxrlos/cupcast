@@ -3,12 +3,12 @@ from itertools import combinations
 import numpy as np
 import pytest
 
-from cupcast.model.dixon_coles import DixonColesFit
-from cupcast.sim.bracket import SLOT_ALLOWED, allocate_thirds
-from cupcast.sim.group_stage import PAIRS, group_tables, rank_group
-from cupcast.sim.knockout import advance_probability
-from cupcast.sim.monte_carlo import run_tournament
-from cupcast.sim.worldcup2026 import ALL_TEAMS, GROUPS, TEAM_GROUP
+from cupcast.v1.model.dixon_coles import DixonColesFit
+from cupcast.v1.sim.bracket import SLOT_ALLOWED, allocate_thirds
+from cupcast.v1.sim.group_stage import PAIRS, group_tables, rank_group
+from cupcast.v1.sim.knockout import advance_probability
+from cupcast.v1.sim.monte_carlo import run_tournament
+from cupcast.v1.sim.worldcup2026 import ALL_TEAMS, GROUPS, TEAM_GROUP
 
 
 def scores_for(results: dict[tuple[int, int], tuple[int, int]]):

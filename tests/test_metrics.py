@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from cupcast.validate.metrics import (
+from cupcast.v1.validate.metrics import (
     brier_score,
     calibration_table,
     log_loss,

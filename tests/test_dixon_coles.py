@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from scipy.optimize import approx_fprime
 
-from cupcast.model.dixon_coles import DixonColesFit, build_objective, fit_dixon_coles
+from cupcast.v1.model.dixon_coles import DixonColesFit, build_objective, fit_dixon_coles
 
 
 def synthetic_matches(n_teams=12, n_matches=4000, mu=0.1, gamma=0.3, seed=7):

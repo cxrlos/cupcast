@@ -1,6 +1,6 @@
 import pytest
 
-from cupcast.ratings.elo import (
+from cupcast.v1.ratings.elo import (
     EloMatch,
     EloRatings,
     expected_score,

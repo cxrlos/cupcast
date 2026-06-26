@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from cupcast.features.expected_minutes import MATCH_MINUTES, expected_minutes_per_match
+from cupcast.v1.features.expected_minutes import MATCH_MINUTES, expected_minutes_per_match
 
 
 def squad_frame():

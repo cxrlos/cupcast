@@ -16,21 +16,26 @@ lint:
 # Every fetcher with per-step isolation and an end summary. Safe to run on
 # any machine: blocked sources fail individually, everything else proceeds.
 all-data:
-	uv run python -m cupcast.fetch.all
+	uv run python -m cupcast.v1.fetch.all
 
 # Re-download refreshable caches (API-Football stays cache-first to protect
 # the request ledger).
 all-data-force:
-	uv run python -m cupcast.fetch.all --force
+	uv run python -m cupcast.v1.fetch.all --force
 
 # Diagnose keys, per-source reachability (with redirect chains), cache state.
 doctor:
-	uv run python -m cupcast.fetch.all --doctor
+	uv run python -m cupcast.v1.fetch.all --doctor
 
 # Run-day: refresh results to the latest matches, snapshot odds (skipped if no
 # key), regenerate every output and paper fragment, rebuild the PDFs.
 forecast:
-	uv run python -c 'from cupcast.fetch.martj42 import fetch_results_csv; fetch_results_csv(refresh=True)'
-	-uv run python -m cupcast.fetch.odds
-	uv run python -m cupcast.report.build
+	uv run python -c 'from cupcast.v1.fetch.martj42 import fetch_results_csv; fetch_results_csv(refresh=True)'
+	-uv run python -m cupcast.v1.fetch.odds
+	uv run python -m cupcast.v1.report.build
 	$(MAKE) docs
+
+# v2 aggressive pull: international + club fixtures/lineups/players/injuries.
+# Cache-first + ledgered; resumes from cache if a day's quota is exhausted.
+v2-data:
+	uv run python -m cupcast.v2.fetch.pull

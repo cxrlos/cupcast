@@ -1,6 +1,6 @@
 import pandas as pd
 
-from cupcast.report.build import latex_table
+from cupcast.v1.report.build import latex_table
 
 
 def test_latex_table_escapes_underscores_in_values_not_headers():

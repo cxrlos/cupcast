@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from cupcast.fetch.api_football import (
+from cupcast.v1.fetch.api_football import (
     ApiFootballClient,
     ApiFootballError,
     QuotaExceededError,
