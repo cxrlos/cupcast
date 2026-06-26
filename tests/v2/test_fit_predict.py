@@ -154,3 +154,54 @@ def test_fit_svi_strong_team_wins():
 
     ph, _pd, pa = outcome_probs(post, "A", "C", host_home=True)
     assert ph > pa, f"A should beat C but p_home={ph:.3f}, p_away={pa:.3f}"
+
+
+# ---------------------------------------------------------------------------
+# host_away extension (Task 1)
+# ---------------------------------------------------------------------------
+
+
+def test_rate_host_away_raises_nu():
+    """host_away=True must give a higher away rate (nu) than host_away=False."""
+    p = _make_small_posterior()
+    _, nu_base = p.rate("A", "B", host_home=False, host_away=False)
+    _, nu_boost = p.rate("A", "B", host_home=False, host_away=True)
+    assert nu_boost > nu_base, f"Expected nu_boost > nu_base but {nu_boost} <= {nu_base}"
+
+
+def test_rate_host_away_does_not_affect_lam():
+    """host_away must not change the home rate (lam)."""
+    p = _make_small_posterior()
+    lam_base, _ = p.rate("A", "B", host_home=False, host_away=False)
+    lam_boost, _ = p.rate("A", "B", host_home=False, host_away=True)
+    assert abs(lam_boost - lam_base) < 1e-12
+
+
+def test_score_matrix_host_away_shifts_mass():
+    """score_matrix(..., host_away=True) should increase p_away relative to host_away=False."""
+    from cupcast.v2.model.predict import outcome_probs
+
+    p = _make_small_posterior()
+    _, _, pa_base = outcome_probs(p, "A", "B", host_home=False, host_away=False)
+    _, _, pa_boost = outcome_probs(p, "A", "B", host_home=False, host_away=True)
+    assert pa_boost > pa_base, f"Expected p_away to rise but {pa_boost} <= {pa_base}"
+
+
+def test_score_matrix_host_away_default_false():
+    """host_away defaults to False — must match explicit host_away=False."""
+    from cupcast.v2.model.predict import score_matrix
+
+    p = _make_small_posterior()
+    m_default = score_matrix(p, "A", "B", host_home=False)
+    m_explicit = score_matrix(p, "A", "B", host_home=False, host_away=False)
+    assert np.allclose(m_default, m_explicit)
+
+
+def test_expected_goals_host_away_raises_away_xg():
+    """expected_goals with host_away=True must produce higher away xG."""
+    from cupcast.v2.model.predict import expected_goals
+
+    p = _make_small_posterior()
+    _, eg_a_base = expected_goals(p, "A", "B", host_home=False, host_away=False)
+    _, eg_a_boost = expected_goals(p, "A", "B", host_home=False, host_away=True)
+    assert eg_a_boost > eg_a_base

@@ -31,15 +31,17 @@ class Posterior:
     def __post_init__(self) -> None:
         self.index = {t: i for i, t in enumerate(self.teams)}
 
-    def rate(self, home: str, away: str, host_home: bool) -> tuple[float, float]:
+    def rate(
+        self, home: str, away: str, host_home: bool, host_away: bool = False
+    ) -> tuple[float, float]:
         """Expected goals per team using posterior-mean parameters.
 
         ``lam = exp(mu + attack[h] - defense[a] + gamma * host_home)``
-        ``nu  = exp(mu + attack[a] - defense[h])``
+        ``nu  = exp(mu + attack[a] - defense[h] + gamma * host_away)``
         """
         h, a = self.index[home], self.index[away]
         lam = float(np.exp(self.mu + self.attack[h] - self.defense[a] + self.gamma * host_home))
-        nu = float(np.exp(self.mu + self.attack[a] - self.defense[h]))
+        nu = float(np.exp(self.mu + self.attack[a] - self.defense[h] + self.gamma * host_away))
         return lam, nu
 
 
