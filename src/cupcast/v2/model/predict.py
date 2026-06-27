@@ -16,14 +16,19 @@ def score_matrix(
     host_away: bool = False,
     max_goals: int = 10,
     rate_scale: float = 1.0,
+    rate_scale_home: float = 1.0,
+    rate_scale_away: float = 1.0,
 ) -> np.ndarray:
     """DC-corrected bivariate-Poisson score matrix using posterior-mean rates.
 
     Returns a normalized ``(max_goals+1, max_goals+1)`` matrix where
     ``matrix[i, j]`` = P(home scores i, away scores j).
+    ``rate_scale`` applies to both sides; ``rate_scale_home``/``rate_scale_away``
+    apply per side on top of ``rate_scale``.
     """
     lam, nu = posterior.rate(home, away, host_home, host_away)
-    lam, nu = lam * rate_scale, nu * rate_scale
+    lam = lam * rate_scale * rate_scale_home
+    nu = nu * rate_scale * rate_scale_away
     goals = np.arange(max_goals + 1)
     matrix = np.outer(poisson.pmf(goals, lam), poisson.pmf(goals, nu))
     corner = np.array(
@@ -43,9 +48,14 @@ def outcome_probs(
     host_home: bool,
     host_away: bool = False,
     max_goals: int = 10,
+    rate_scale_home: float = 1.0,
+    rate_scale_away: float = 1.0,
 ) -> tuple[float, float, float]:
     """Return (p_home_win, p_draw, p_away_win) from the DC score matrix."""
-    matrix = score_matrix(posterior, home, away, host_home, host_away, max_goals)
+    matrix = score_matrix(
+        posterior, home, away, host_home, host_away, max_goals,
+        rate_scale_home=rate_scale_home, rate_scale_away=rate_scale_away,
+    )
     p_home = float(np.tril(matrix, -1).sum())
     p_draw = float(np.trace(matrix))
     return p_home, p_draw, 1.0 - p_home - p_draw
