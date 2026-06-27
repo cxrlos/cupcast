@@ -17,6 +17,7 @@ dependencies = [
     "tabulate>=0.10.0",
     "numpyro>=0.21.0",
     "penaltyblog>=1.11.0",
+    "optuna>=4.9.0",
 ]
 
 [dependency-groups]

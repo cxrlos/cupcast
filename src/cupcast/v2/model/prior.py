@@ -69,6 +69,9 @@ def dynamic_dc_with_prior(
     n_periods: int,
     clubform_attack,
     clubform_defense,
+    sigma_att_scale: float = 0.3,
+    sigma_def_scale: float = 0.3,
+    tau_prior_scale: float = 0.5,
 ):
     """Dynamic Dixon-Coles model with a learned linear clubform prior (f_θ).
 
@@ -99,20 +102,26 @@ def dynamic_dc_with_prior(
     clubform_attack, clubform_defense:
         Standardized clubform composites aligned to the team index, length
         ``n_teams``.  Produce these with :func:`clubform_prior_locs`.
+    sigma_att_scale:
+        Scale of the ``HalfNormal`` prior on the attack GRW innovation SD.
+    sigma_def_scale:
+        Scale of the ``HalfNormal`` prior on the defense GRW innovation SD.
+    tau_prior_scale:
+        Scale of the ``HalfNormal`` prior on the clubform-prior dispersion.
     """
     mu = numpyro.sample("mu", dist.Normal(0.0, 1.0))
     gamma = numpyro.sample("gamma", dist.Normal(0.0, 0.5))
     rho = numpyro.sample("rho", dist.Uniform(-0.3, 0.3))
 
-    sigma_att = numpyro.sample("sigma_att", dist.HalfNormal(0.3))
-    sigma_def = numpyro.sample("sigma_def", dist.HalfNormal(0.3))
+    sigma_att = numpyro.sample("sigma_att", dist.HalfNormal(sigma_att_scale))
+    sigma_def = numpyro.sample("sigma_def", dist.HalfNormal(sigma_def_scale))
 
     # f_θ linear map coefficients.
     a0 = numpyro.sample("a0", dist.Normal(0.0, 1.0))
     a1 = numpyro.sample("a1", dist.Normal(0.0, 1.0))
     d0 = numpyro.sample("d0", dist.Normal(0.0, 1.0))
     d1 = numpyro.sample("d1", dist.Normal(0.0, 1.0))
-    tau_prior = numpyro.sample("tau_prior", dist.HalfNormal(0.5))
+    tau_prior = numpyro.sample("tau_prior", dist.HalfNormal(tau_prior_scale))
 
     cf_att = jnp.asarray(clubform_attack)
     cf_def = jnp.asarray(clubform_defense)
