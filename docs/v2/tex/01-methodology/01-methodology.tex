@@ -1,0 +1,141 @@
+\documentclass[11pt]{article}
+\input{../shared/preamble.tex}
+
+\title{Cupcast~II: A Dynamic State-Space Dixon--Coles Model with\\
+Squad-Quality Priors and Bounded Context Covariates\\for the 2026 FIFA World Cup}
+\author{Carlos Garcia}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We replace the static Dixon--Coles model of Cupcast~I with a \emph{dynamic
+state-space} formulation in which each national team's latent attack and
+defence evolve as a Gaussian random walk over quarterly periods, so that form
+is a first-class quantity rather than a fixed exponential decay. The initial
+strength level of every team is a \emph{learned} function of a lineup-aware
+squad-quality composite, built from two seasons of club performance data
+normalised by a club-Elo league-strength index and weighted by data-driven
+expected national-team minutes. A bounded, audited context layer adjusts
+individual match predictions for travel, host crowd, and altitude, each effect
+hard-capped so it cannot dominate the statistical core. Inference is by
+stochastic variational inference (with No-U-Turn sampling for final fits) in
+NumPyro \cite{phan2019numpyro}, and match probabilities feed a 50{,}000-run
+Monte Carlo simulation of the full 48-team bracket. Held-out performance against
+the actual 2026 group stage, and a comparison against the Cupcast~I baseline,
+are reported in Paper~II-V.
+\end{abstract}
+
+\section{Introduction}
+Cupcast~I \cite{dixoncoles1997} fitted a single static rating per team by
+recency-weighted maximum likelihood and shrank it toward an Elo-and-squad prior.
+Two weaknesses motivated a rebuild. First, the squad layer was inert: an
+attack-only per-90 proxy with thin league coverage left player identity nearly
+invisible to the forecast. Second, the model was static and results-driven,
+which systematically overweighted recent competitive form (it priced Argentina
+as a $16.3\%$ title favourite against a market consensus near $8\%$).
+
+Cupcast~II addresses both directly. Section~\ref{sec:data} describes the data
+and the \texttt{clubform} subsystem. Section~\ref{sec:model} specifies the
+dynamic state-space goal model and its clubform-informed prior.
+Section~\ref{sec:inf} covers inference. Section~\ref{sec:ctx} specifies the
+bounded context layer. Section~\ref{sec:sim} describes the tournament
+simulation. All stochastic steps are seeded and reproduce exactly.
+
+\section{Data and the Clubform Subsystem}\label{sec:data}
+International results, lineups, injuries, and per-fixture player statistics are
+pulled from API-Football \cite{apifootball} (all six confederations' World Cup
+qualifiers, continental championships, Nations Leagues, and friendlies,
+2018--2026; eighteen club leagues over two seasons), cached first and read only
+from cache. Youth, B, and non-FIFA selections are filtered out, and matches are
+held out at the tournament cutoff.
+
+The \texttt{clubform} subsystem produces, per national team, position-aware
+attack/defence/goalkeeping composites. (i)~A \emph{league-strength index}
+normalises per-90 statistics across leagues as the median club-Elo
+\cite{clubelo} of a league's clubs, mapped to a multiplier centred on one
+(Premier League $1.45$ down to weaker leagues near $0.65$), with a curated
+fallback for non-European leagues club-Elo does not rate. (ii)~Player quality is
+the league-strength-scaled, within-position $z$-score of attacking
+(non-penalty goals plus assists, shots, key passes), defensive (tackles,
+interceptions, blocks, duels won), and goalkeeping (save rate) output.
+(iii)~Expected tournament minutes are estimated from \emph{actual recent
+national-team lineups}: a recency-weighted start frequency reconstructs each
+nation's core eleven. Per-team composites join player quality to expected
+minutes by the global player identifier, with unmatched players imputed at the
+position floor; this yields $\approx0.99$ coverage for elite squads.
+
+\section{The Dynamic State-Space Goal Model}\label{sec:model}
+For match $m$ at period $p_m$ between home team $h$ and away team $a$, goals are
+conditionally Poisson with a Dixon--Coles low-score correction. The log scoring
+rates are
+\begin{align}
+\log\lambda_m &= \mu + \att_h(p_m) - \dfn_a(p_m) + \gamma\,\mathbb{1}[\text{host}_h],\\
+\log\nu_m     &= \mu + \att_a(p_m) - \dfn_h(p_m) + \gamma\,\mathbb{1}[\text{host}_a],
+\end{align}
+with home and away goals $x,y \sim \mathrm{Poisson}(\lambda_m),\mathrm{Poisson}(\nu_m)$
+and the joint mass on $\{0,1\}^2$ multiplied by the correction
+$\tau(x,y;\lambda,\nu,\rho)$ of \cite{dixoncoles1997}, $\rho\in(-0.3,0.3)$. The
+correction is applied as an additive log-likelihood factor.
+
+\paragraph{Dynamics (form).} Each team's attack and defence are time-varying
+latent states following a non-centred Gaussian random walk across periods:
+\begin{equation}
+\att_i(p) = \att_i(0) + \sigma_\att \sum_{t\le p} z^{\att}_{i,t},
+\qquad z^{\att}_{i,t}\sim\mathcal N(0,1),
+\end{equation}
+and analogously for $\dfn_i$ with innovation scale $\sigma_\dfn$. The innovation
+scales $\sigma_\att,\sigma_\dfn\sim\mathrm{HalfNormal}$ are the principled
+replacement for Cupcast~I's fixed decay half-life; they govern how fast form may
+move and, because the filter advances the latent state, in-tournament updating
+is automatic. This is the football-specific instance of the dynamic
+bivariate-Poisson approach of \cite{koopmanlit2015,baioblangiardo2010}.
+
+\paragraph{Clubform-informed prior $f_\theta$.} The initial level of each team
+is a learned linear function of its clubform composite,
+\begin{equation}
+\att_i(0) \sim \mathcal N\!\big(a_0 + a_1\,\mathrm{clubform}^{\att}_i,\ \tau_{\text{prior}}^2\big),
+\qquad a_0,a_1 \sim \mathcal N(0,\cdot),
+\end{equation}
+with the defensive analogue. Data-rich teams' walks move away from this prior;
+data-poor teams remain anchored to it. The learned slope is positive on real
+data ($a_1>0$), confirming that club performance predicts international scoring.
+
+\section{Inference}\label{sec:inf}
+The model is fitted in NumPyro \cite{phan2019numpyro} on CPU. The primary fitter
+is stochastic variational inference with an \texttt{AutoNormal} guide,
+initialised at the prior median to avoid the rate overflow a random
+initialisation can trigger; No-U-Turn sampling is available for final fits.
+Every fit threads an explicit pseudo-random key so results reproduce exactly.
+
+\section{Bounded Context Layer}\label{sec:ctx}
+Four of six context families are computed deterministically from the schedule
+and a static sixteen-venue table (coordinates, elevation, host nation, and how
+late each hosts; Mexican and Canadian venues host only through the Round of~16,
+with all later rounds in the United States). Per match and team we compute rest
+days, great-circle travel distance from the previous venue, a round-aware host
+flag, and venue altitude. Each maps to a hard-capped multiplicative adjustment
+of the scoring rate---host $\le e^{0.12}$, travel fatigue $\ge e^{-0.10}$, short
+rest $\ge e^{-0.08}$, altitude on the non-adapted side $\ge e^{-0.10}$---with a
+per-match provenance record of every raw and applied value. The statistical core
+owns the probabilities; the context layer can only nudge. Morale, the one family
+without a structured source, is extracted in shadow mode (logged, zero weight)
+until an ablation proves its value.
+
+\section{Tournament Simulation}\label{sec:sim}
+Match probabilities feed a seeded $50{,}000$-run Monte Carlo simulation of the
+official 48-team structure: twelve groups of four under FIFA's group tiebreaker
+cascade \cite{fifaregs}, the eight best third-placed teams allocated to the
+Round of~32 by FIFA's Annex-C backtracking rule, and knockout rounds through the
+final and third-place match with extra time as rescaled rates and a
+goalkeeper-adjusted penalty shootout. The simulation runs in about one second
+and yields, for every team, the probability of each round, the title, the
+runner-up spot, and a podium finish. Proper scoring-rule validation
+\cite{gneitingraftery2007} and the Cupcast~I comparison follow in
+Paper~II-V.
+
+\bibliographystyle{abbrvnat}
+\bibliography{references}
+
+\end{document}

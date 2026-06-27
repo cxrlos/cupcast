@@ -1,0 +1,133 @@
+\documentclass[11pt]{article}
+\input{../shared/preamble.tex}
+
+\title{Cupcast~II-V: Held-Out Validation and a Comparison\\
+Against the Cupcast~I Baseline on the 2026 World Cup}
+\author{Carlos Garcia}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We evaluate the dynamic state-space model of Paper~II against the static
+Cupcast~I baseline on the matches of the 2026 World Cup that have actually been
+played, both models trained strictly before kickoff. On the $60$ completed group
+matches the new model improves out-of-sample log-loss from $0.869$ to $0.856$
+and is better on Brier score and the ranked probability score as well. A
+pre/post ablation shows the bounded context layer (travel, host, altitude)
+improves all three scores further; an honest counter-result is that
+cross-validated hyperparameter tuning, while it lowers the internationals
+cross-validation loss, \emph{degrades} World Cup performance---the model's
+default priors generalise better than tuned ones. We close with the headline
+forecast.
+\end{abstract}
+
+\section{Protocol}
+Both models are fitted to international results before the tournament cutoff of
+11~June~2026; the $60$ subsequently completed group matches are a clean held-out
+test set. We report three strictly proper scoring rules \cite{gneitingraftery2007}
+over the three-way (home/draw/away) outcome: logarithmic loss, the multiclass
+Brier score, and the ranked probability score (RPS). Lower is better; the uniform
+forecast $(\tfrac13,\tfrac13,\tfrac13)$ scores $\log$-loss $\ln 3 = 1.099$.
+The Cupcast~I baseline is its frozen pipeline, queried through a name-mapping
+layer; the comparison is restricted to matches both models can score.
+
+\section{The rebuild improves the metric}
+Table~\ref{tab:headline} reports the held-out scores. The dynamic model beats the
+static baseline on every metric, and both beat the uniform forecast decisively.
+
+\begin{table}[h]\centering
+\begin{tabular}{lccc}
+\toprule
+Forecaster & Log-loss & Brier & RPS \\
+\midrule
+Cupcast~II (dynamic + clubform) & \textbf{0.856} & \textbf{0.515} & \textbf{0.157} \\
+Cupcast~I (static baseline)     & 0.869 & 0.523 & 0.160 \\
+Uniform                         & 1.099 & 0.667 & 0.233 \\
+\bottomrule
+\end{tabular}
+\caption{Held-out scoring on the 60 played 2026 World Cup group matches. Lower
+is better.}\label{tab:headline}
+\end{table}
+
+The improvement is modest ($\sim1.4\%$ in log-loss) but consistent across all
+three rules. It is corroborated out of sample on $772$ historical international
+matches under rolling-origin cross-validation, where the dynamic model scores
+log-loss $0.910$ (RPS $0.175$) against $1.099$ for uniform, on par with a
+static weighted Dixon--Coles baseline. The most visible behavioural change is
+that the Cupcast~I overrating of recent competitive form is corrected: the title
+probability the static model assigned to its favourite falls from an inflated
+$16.3\%$ to a market-plausible $10.2\%$.
+
+\section{The context layer earns its place}
+We ablate the bounded context covariates of Paper~II by scoring the same
+held-out matches with and without them (host advantage routed entirely through
+the context layer so the comparison is clean). Table~\ref{tab:ablation} shows
+that travel, host, and altitude together improve all three scores.
+
+\begin{table}[h]\centering
+\begin{tabular}{lccc}
+\toprule
+ & Log-loss & Brier & RPS \\
+\midrule
+Model only            & 0.865 & 0.521 & 0.160 \\
+Model + context       & \textbf{0.860} & \textbf{0.518} & \textbf{0.158} \\
+\bottomrule
+\end{tabular}
+\caption{Pre/post-context ablation on the 60 played group matches.}\label{tab:ablation}
+\end{table}
+
+The signals are concrete: Mexico plays all three group games at home at altitude
+(Mexico City $\approx2240$\,m, Guadalajara $\approx1560$\,m), and Iran faces a
+$1{,}553$\,km travel leg between matches. Each effect is hard-capped and
+provenance-logged, so the gain is earned without letting any single signal
+dominate.
+
+\section{An honest counter-result: tuning overfits the wrong regime}
+We tuned the model's prior hyperparameters by Optuna \cite{akiba2019optuna}
+under rolling-origin cross-validation on past internationals. The search found
+parameters with a \emph{better} cross-validation loss ($0.842$ versus the
+defaults), but those parameters \emph{worsened} the World Cup hold-out (log-loss
+$0.865$, up from the untuned $0.856$). The internationals folds---qualifiers and
+friendlies---are a different regime from the tournament (neutral venues,
+fresh squads, knockout intensity), and tuning to them does not transfer.
+The practical conclusion is to keep the sensible default priors, which are robust
+and remain the best configuration on the actual test.
+
+\section{The forecast}
+The production configuration (default priors, model host advantage, and the
+context travel/altitude covariates) yields the championship probabilities of
+Table~\ref{tab:forecast} from $50{,}000$ simulated tournaments.
+
+\begin{table}[h]\centering
+\begin{tabular}{lc@{\qquad}lc}
+\toprule
+Team & Champion & Team & Champion \\
+\midrule
+Brazil    & 20.4\% & Netherlands & 5.5\% \\
+Spain     & 13.2\% & Belgium     & 4.7\% \\
+England   & 11.9\% & Colombia    & 4.2\% \\
+Argentina & 10.2\% & Germany     & 2.6\% \\
+Portugal  & 8.3\%  & Switzerland & 1.8\% \\
+France    & 5.8\%  & Uruguay     & 1.5\% \\
+\bottomrule
+\end{tabular}
+\caption{Cupcast~II championship probabilities for the 2026 World Cup
+(top teams), from 50{,}000 Monte Carlo tournaments with the held-out model.}\label{tab:forecast}
+\end{table}
+
+\section{Discussion}
+Two of the redesign's premises are validated on the real tournament: a
+lineup-aware, dynamically-evolving model beats the static results-only baseline,
+and bounded contextual signals add genuine predictive value. A third, more
+sobering, lesson is that aggressive hyperparameter tuning can overfit a proxy
+distribution; the disciplined defaults win. Remaining work---weather and injury
+covariates, and a learned (rather than shadow) morale signal subject to the same
+ablation gate---can only be admitted to the production forecast if it clears the
+same held-out bar these results were held to.
+
+\bibliographystyle{abbrvnat}
+\bibliography{references}
+
+\end{document}
