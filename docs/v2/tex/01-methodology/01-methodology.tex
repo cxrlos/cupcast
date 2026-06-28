@@ -128,8 +128,13 @@ Match probabilities feed a seeded $50{,}000$-run Monte Carlo simulation of the
 official 48-team structure: twelve groups of four under FIFA's group tiebreaker
 cascade \cite{fifaregs}, the eight best third-placed teams allocated to the
 Round of~32 by FIFA's Annex-C backtracking rule, and knockout rounds through the
-final and third-place match with extra time as rescaled rates and a
-goalkeeper-adjusted penalty shootout. The simulation runs in about one second
+final and third-place match. A knockout drawn after ninety minutes proceeds to
+extra time, modelled as the same goal model at one-third of the regulation
+scoring rates; a tie after extra time is resolved by a penalty shootout held
+near even and nudged, within a hard $\pm5$ percentage-point cap, by a
+penalty-specific shootout composite built from each squad's goalkeeper
+penalty-save and outfield penalty-conversion records (a far more shootout-relevant
+signal than general shot-stopping volume, which is confounded by team strength). The simulation runs in about one second
 and yields, for every team, the probability of each round, the title, the
 runner-up spot, and a podium finish. Proper scoring-rule validation
 \cite{gneitingraftery2007} and the Cupcast~I comparison follow in

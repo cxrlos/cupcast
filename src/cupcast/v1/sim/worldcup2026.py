@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # Confirmed group draw after the March 2026 playoffs, per the official schedule
-# (sources cited in docs/tex/01-methodology, data section).
+# (sources cited in docs/v1/tex/01-methodology, data section).
 GROUPS: dict[str, tuple[str, str, str, str]] = {
     "A": ("Mexico", "South Africa", "South Korea", "Czech Republic"),
     "B": ("Canada", "Bosnia and Herzegovina", "Qatar", "Switzerland"),

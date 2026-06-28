@@ -1,11 +1,17 @@
 PAPERS = 01-methodology 02-validation 03-forecast
+V2_PAPERS = 01-methodology 02-comparison
 
-.PHONY: docs test lint forecast all-data $(PAPERS)
+.PHONY: docs docs-v2 test lint forecast all-data $(PAPERS) $(addprefix v2-,$(V2_PAPERS))
 
 docs: $(PAPERS)
 
 $(PAPERS):
-	cd docs/tex/$@ && tectonic -o ../../pdf $@.tex
+	cd docs/v1/tex/$@ && tectonic -o ../../pdf $@.tex
+
+docs-v2: $(addprefix v2-,$(V2_PAPERS))
+
+$(addprefix v2-,$(V2_PAPERS)):
+	cd docs/v2/tex/$(patsubst v2-%,%,$@) && tectonic -o ../../pdf $(patsubst v2-%,%,$@).tex
 
 test:
 	uv run pytest

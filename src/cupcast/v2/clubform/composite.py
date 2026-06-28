@@ -192,6 +192,39 @@ def style_profile(
     return {"formations": formations, "lines": lines}
 
 
+def assemble_expected_minutes(
+    client,
+    intl_comp_seasons: list[tuple[int, int]],
+) -> pd.DataFrame:
+    """Fetch international lineups and return per-player expected minutes with team.
+
+    Returns columns: ``player_id, team, exp_minutes``.
+    """
+    lineups_by_fixture: dict[int, list[dict]] = {}
+    fixture_dates: dict[int, str] = {}
+
+    for comp_id, season in intl_comp_seasons:
+        fixtures = fetch_fixtures(client, comp_id, season)
+        for f in fixtures:
+            fix = f.get("fixture") or {}
+            fid = fix.get("id")
+            date = (fix.get("date") or "")[:10]
+            if fid and date:
+                fixture_dates[fid] = date
+        for fid in fixture_ids(fixtures):
+            lineups = fetch_lineups(client, fid)
+            if lineups:
+                lineups_by_fixture[fid] = lineups
+
+    appearances = national_team_appearances(lineups_by_fixture, fixture_dates)
+    exp_min = _expected_minutes(appearances)
+
+    team_map = appearances.set_index("player_id")["team"].to_dict()
+    exp_min = exp_min.copy()
+    exp_min["team"] = exp_min["player_id"].map(team_map)
+    return exp_min[["player_id", "team", "exp_minutes"]].dropna(subset=["team"])
+
+
 def build_clubform(
     client,
     club_league_seasons: list[tuple[int, int]],
@@ -214,38 +247,11 @@ def build_clubform(
     strength_index:
         Output of :func:`~cupcast.v2.clubform.league_strength.league_strength_index`.
     """
-    # --- player quality from club leagues ---
     player_responses_by_league: dict[int, list[dict]] = {}
     for league_id, season in club_league_seasons:
         responses = fetch_players(client, league_id, season)
         player_responses_by_league.setdefault(league_id, []).extend(responses)
 
     player_quality = assemble_player_quality(player_responses_by_league, strength_index)
-
-    # --- international lineups → expected minutes ---
-    lineups_by_fixture: dict[int, list[dict]] = {}
-    fixture_dates: dict[int, str] = {}
-
-    for comp_id, season in intl_comp_seasons:
-        fixtures = fetch_fixtures(client, comp_id, season)
-        for f in fixtures:
-            fix = f.get("fixture") or {}
-            fid = fix.get("id")
-            date = (fix.get("date") or "")[:10]
-            if fid and date:
-                fixture_dates[fid] = date
-        for fid in fixture_ids(fixtures):
-            lineups = fetch_lineups(client, fid)
-            if lineups:
-                lineups_by_fixture[fid] = lineups
-
-    appearances = national_team_appearances(lineups_by_fixture, fixture_dates)
-    exp_min = _expected_minutes(appearances)
-
-    # Attach team from appearances (expected_minutes drops that column).
-    team_map = appearances.set_index("player_id")["team"].to_dict()
-    exp_min = exp_min.copy()
-    exp_min["team"] = exp_min["player_id"].map(team_map)
-    exp_min = exp_min[["player_id", "team", "exp_minutes"]].dropna(subset=["team"])
-
+    exp_min = assemble_expected_minutes(client, intl_comp_seasons)
     return squad_profiles(player_quality, exp_min)
