@@ -1,73 +1,73 @@
-stage,home,away,p_home,p_draw,p_away,modal_score,xg_home,xg_away,confidence,note
-Group A,Mexico,South Africa,0.6646984416122843,0.22256626936326832,0.11273528902444738,1-0,1.86640838140245,0.630119412226275,2,Mexico are a class above on rating (+0.85 net). Mexico carry host advantage here.
-Group A,Mexico,South Korea,0.5012284730590927,0.27133849958033973,0.22743302736056759,1-1,1.5283932267175675,0.9478410618674932,1,"Mexico favored, but within one rating tier (+0.24 net). Mexico carry host advantage here."
-Group A,Mexico,Czech Republic,0.5271101945754553,0.2578969699596977,0.21499283546484704,1-1,1.6524554444487534,0.970526037551919,1,"Mexico favored, but within one rating tier (+0.30 net). Mexico carry host advantage here."
-Group A,South Africa,South Korea,0.19696675368004812,0.29085582748991123,0.5121774188300406,0-1,0.7530198820979823,1.3832402781655782,1,"South Korea favored, but within one rating tier (-0.61 net)."
-Group A,South Africa,Czech Republic,0.20885205363006099,0.28591994084530864,0.5052280055246303,0-1,0.8141468913152126,1.4163452539994326,1,"Czech Republic favored, but within one rating tier (-0.55 net)."
-Group A,South Korea,Czech Republic,0.3696970007222282,0.29214152240589075,0.33816147687188103,1-1,1.2246590471196832,1.1598201406475601,1,Near coin-flip on ratings; group context will decide approach.
-Group B,Canada,Bosnia and Herzegovina,0.6239052098718421,0.23841465587185293,0.13768013425630501,1-0,1.7711690441681684,0.7038772053715536,2,"Canada favored, but within one rating tier (+0.69 net). Canada carry host advantage here."
-Group B,Canada,Qatar,0.7552541627269954,0.16376232903905522,0.08098350823394937,2-0,2.4239443645086585,0.680186455776274,3,Canada are a class above on rating (+1.04 net). Canada carry host advantage here.
-Group B,Canada,Switzerland,0.300441709463363,0.28260814578397553,0.41695014475266146,1-1,1.1214781270021554,1.3660259128565992,1,"Switzerland favored, but within one rating tier (-0.43 net). Canada carry host advantage here."
-Group B,Bosnia and Herzegovina,Qatar,0.4565454857981148,0.2850234792769748,0.2584310349249104,1-1,1.3941219431001945,0.9842418993244003,1,"Bosnia and Herzegovina favored, but within one rating tier (+0.35 net)."
-Group B,Bosnia and Herzegovina,Switzerland,0.10648707489865336,0.2097795756450002,0.6837333494563465,0-2,0.6449046948623585,1.9765983887902479,2,Switzerland are a class above on rating (-1.12 net).
-Group B,Qatar,Switzerland,0.05820512460913004,0.13381670705671117,0.8079781683341587,0-2,0.6231988123692286,2.7045569619180787,4,Switzerland are a class above on rating (-1.47 net).
-Group C,Brazil,Morocco,0.4191252747770336,0.33047778295793306,0.2503969422650334,0-0,1.0913299493713904,0.7764571190852154,1,"Brazil favored, but within one rating tier (+0.34 net). Elevated draw risk; a cagey low-scoring game is the modal pattern."
-Group C,Brazil,Haiti,0.8995822846809534,0.07578357851504422,0.02463413680400242,3-0,3.408190987494673,0.503973100647422,5,Brazil are a class above on rating (+1.91 net).
-Group C,Brazil,Scotland,0.6721338492130219,0.20956013511518254,0.11830601567179558,2-0,2.0179625421740477,0.7226883769029907,2,Brazil are a class above on rating (+1.03 net).
-Group C,Morocco,Haiti,0.7623831427649513,0.17731228460438053,0.06030457263066813,2-0,2.1080539160186125,0.4372994194359449,3,Morocco are a class above on rating (+1.57 net).
-Group C,Morocco,Scotland,0.506872316015629,0.3127466562511479,0.18038102773322312,1-0,1.245843427120105,0.6270795175598026,1,"Morocco favored, but within one rating tier (+0.69 net). Elevated draw risk; a cagey low-scoring game is the modal pattern."
-Group C,Haiti,Scotland,0.14094537959468695,0.22015784635467028,0.6388967740506428,0-2,0.8086370675572142,1.9621232406143283,2,Scotland are a class above on rating (-0.89 net).
-Group D,United States,Paraguay,0.3765021587978875,0.2946566646330683,0.3288411765690442,1-1,1.2217266783820677,1.1243880891308782,1,Near coin-flip on ratings; group context will decide approach. United States carry host advantage here.
-Group D,United States,Australia,0.37143098598706814,0.2852803610364709,0.34328865297646094,1-1,1.271651760979418,1.2127586417238778,1,Near coin-flip on ratings; group context will decide approach. United States carry host advantage here.
-Group D,United States,Turkey,0.36176127879246156,0.2553302615653895,0.3829084596421489,1-1,1.4771610397858823,1.5252622046632562,1,Near coin-flip on ratings; group context will decide approach. United States carry host advantage here.
-Group D,Paraguay,Australia,0.32071960997501187,0.34089142848171633,0.33838896154327186,0-0,0.8970903774377145,0.929608751712541,1,Near coin-flip on ratings; group context will decide approach. Elevated draw risk; a cagey low-scoring game is the modal pattern.
-Group D,Paraguay,Turkey,0.3158093508863815,0.30459145122749126,0.3795991978861272,1-1,1.0420697257720941,1.169153971852372,1,Near coin-flip on ratings; group context will decide approach. Elevated draw risk; a cagey low-scoring game is the modal pattern.
-Group D,Australia,Turkey,0.3296807292655225,0.2950764322815979,0.3752428384528796,1-1,1.123970670022053,1.216930801492277,1,Near coin-flip on ratings; group context will decide approach.
-Group E,Germany,Curaçao,0.9198370002612223,0.06128354258773755,0.01887945715104017,3-0,3.685443843880469,0.4920259120506468,5,Germany are a class above on rating (+2.02 net).
-Group E,Germany,Ivory Coast,0.5582513119464956,0.25530650412015804,0.18644218393334638,1-0,1.6686379663731288,0.8621350232692216,1,"Germany favored, but within one rating tier (+0.66 net)."
-Group E,Germany,Ecuador,0.3831176477694418,0.30639865845845843,0.3104836937720998,1-1,1.1648837135450374,1.0208531453025427,1,Near coin-flip on ratings; group context will decide approach. Elevated draw risk; a cagey low-scoring game is the modal pattern.
-Group E,Curaçao,Ivory Coast,0.08064773363392323,0.20108255062754576,0.718269715738531,0-2,0.5065326001066563,1.9666428797087863,3,Ivory Coast are a class above on rating (-1.36 net).
-Group E,Curaçao,Ecuador,0.03871173441786069,0.14374404294637966,0.8175442226357597,0-2,0.3536097654594546,2.328484379520674,4,Ecuador are a class above on rating (-1.88 net).
-Group E,Ivory Coast,Ecuador,0.2068923507611392,0.3458087570315305,0.44729889220733027,0-0,0.6196002355480679,1.0509515181980889,1,"Ecuador favored, but within one rating tier (-0.53 net). Elevated draw risk; a cagey low-scoring game is the modal pattern."
-Group F,Netherlands,Japan,0.40080761128232656,0.2919104969293318,0.30728189178834164,1-1,1.2791782017246158,1.0872287298113874,1,Near coin-flip on ratings; group context will decide approach.
-Group F,Netherlands,Sweden,0.5939458807750251,0.22496438023488746,0.18108973899008746,1-1,1.980592755101987,1.0084607177521008,1,"Netherlands favored, but within one rating tier (+0.68 net)."
-Group F,Netherlands,Tunisia,0.6208929324195751,0.2445878331129196,0.1345192344675053,1-0,1.710656461533783,0.6627871027956745,2,Netherlands are a class above on rating (+0.95 net).
-Group F,Japan,Sweden,0.5156805622288678,0.26484125590087826,0.21947818187025392,1-1,1.587855330684403,0.9512010609600542,1,"Japan favored, but within one rating tier (+0.51 net)."
-Group F,Japan,Tunisia,0.5439552324568965,0.29271556911096025,0.16332919843214327,1-0,1.3714172982751651,0.6251545118570461,1,"Japan favored, but within one rating tier (+0.79 net)."
-Group F,Sweden,Tunisia,0.42637564135550476,0.29851513303871025,0.275109225605785,1-1,1.2720611411081548,0.9679800961433341,1,"Sweden favored, but within one rating tier (+0.27 net)."
-Group G,Belgium,Egypt,0.5525789200202373,0.2772088020562584,0.17021227792350424,1-0,1.4809000569624462,0.7020371326602202,1,"Belgium favored, but within one rating tier (+0.75 net)."
-Group G,Belgium,Iran,0.5128734507727101,0.2718095413236654,0.2153170079036245,1-1,1.5274861719511705,0.9002534079063846,1,"Belgium favored, but within one rating tier (+0.53 net)."
-Group G,Belgium,New Zealand,0.7665286537661007,0.17184582876414572,0.06162551746975359,2-0,2.178780611607193,0.4677308414853157,3,Belgium are a class above on rating (+1.54 net).
-Group G,Egypt,Iran,0.27846281887315427,0.33430311710333593,0.3872340640235098,0-0,0.8316804185454102,1.033972950865706,1,"Iran favored, but within one rating tier (-0.22 net). Elevated draw risk; a cagey low-scoring game is the modal pattern."
-Group G,Egypt,New Zealand,0.5143796488610148,0.3243159671450894,0.16130438399389574,1-0,1.1863787931880567,0.5372055037698533,1,"Egypt favored, but within one rating tier (+0.79 net). Elevated draw risk; a cagey low-scoring game is the modal pattern."
-Group G,Iran,New Zealand,0.6047102054164659,0.2676269532327043,0.12766284135082978,1-0,1.5213409180834188,0.5541054306462686,2,Iran are a class above on rating (+1.01 net).
-Group H,Spain,Cape Verde,0.8800540291076824,0.09355709514594453,0.026388875746373094,2-0,2.9808140338734206,0.40805124046300306,5,Spain are a class above on rating (+1.99 net).
-Group H,Spain,Saudi Arabia,0.8440842570180147,0.11997209032881313,0.03594365265317216,2-0,2.6461900056579646,0.4155451511982944,4,Spain are a class above on rating (+1.85 net).
-Group H,Spain,Uruguay,0.5268847399516895,0.2871869045254161,0.18592835552289438,1-0,1.41062010381082,0.7265253184794145,1,"Spain favored, but within one rating tier (+0.66 net)."
-Group H,Cape Verde,Saudi Arabia,0.2967416575074341,0.3378978017182868,0.3653605407742791,0-0,0.8595113596078549,0.9864251417178265,1,Near coin-flip on ratings; group context will decide approach. Elevated draw risk; a cagey low-scoring game is the modal pattern.
-Group H,Cape Verde,Uruguay,0.08764409770413123,0.23097170571551265,0.6813841965803561,0-1,0.4580346260586774,1.7246133466608629,2,Uruguay are a class above on rating (-1.33 net).
-Group H,Saudi Arabia,Uruguay,0.1050561398666084,0.26225881717886207,0.6326850429545294,0-1,0.46644648775466613,1.530332707194829,2,Uruguay are a class above on rating (-1.19 net).
-Group I,France,Senegal,0.5198731663634453,0.28070479828997946,0.19942203534657527,1-0,1.4578068927292358,0.8011956957541158,1,"France favored, but within one rating tier (+0.60 net)."
-Group I,France,Iraq,0.7664890330444856,0.1720268412285633,0.06148412572695114,2-0,2.17568754464745,0.46585261680909634,3,France are a class above on rating (+1.54 net).
-Group I,France,Norway,0.492932009153796,0.26627537241317334,0.24079261843303068,1-1,1.5683924109082859,1.0241463619212596,1,"France favored, but within one rating tier (+0.43 net)."
-Group I,Senegal,Iraq,0.5812199611436131,0.28079893087383906,0.13798110798254787,1-0,1.4398620102714312,0.5609242991739529,2,Senegal are a class above on rating (+0.94 net).
-Group I,Senegal,Norway,0.302166242533066,0.2988506591375934,0.3989830983293406,1-1,1.0378869184550235,1.2331545576826646,1,Near coin-flip on ratings; group context will decide approach.
-Group I,Iraq,Norway,0.1093805293234503,0.22434124798201882,0.6662782226945309,0-1,0.6034760308685229,1.840504790813076,2,Norway are a class above on rating (-1.12 net).
-Group J,Argentina,Algeria,0.6412441871712997,0.2431204562936499,0.11563535653505039,1-0,1.6902954020647745,0.5716635517545167,2,Argentina are a class above on rating (+1.08 net).
-Group J,Argentina,Austria,0.5956821900572673,0.27035489690786224,0.13396291303487046,1-0,1.5082366266483132,0.5737036237477025,2,Argentina are a class above on rating (+0.97 net).
-Group J,Argentina,Jordan,0.8479106190490615,0.11821803546760887,0.033871345483329623,2-0,2.643634552593853,0.39588126902348936,5,Argentina are a class above on rating (+1.90 net).
-Group J,Algeria,Austria,0.3169559848844556,0.2999538655603716,0.38309014955517273,1-1,1.0682451622321123,1.2014718378441815,1,Near coin-flip on ratings; group context will decide approach.
-Group J,Algeria,Jordan,0.6144041853552865,0.23098559771142382,0.15461021693328966,1-0,1.8729829495584283,0.8290699486847904,2,Algeria are a class above on rating (+0.82 net).
-Group J,Austria,Jordan,0.6387397495765236,0.2266138022396045,0.13464644818387192,1-0,1.8796657441689362,0.7397678646430035,2,Austria are a class above on rating (+0.93 net).
-Group K,Portugal,DR Congo,0.6726001828115191,0.22907682833620446,0.09832298885227642,1-0,1.7687318343648362,0.5234693742064905,2,Portugal are a class above on rating (+1.22 net).
-Group K,Portugal,Uzbekistan,0.6768247643741354,0.220395045851677,0.1027801897741876,1-0,1.8589714128746064,0.5791026970776204,2,Portugal are a class above on rating (+1.17 net).
-Group K,Portugal,Colombia,0.3763633567138346,0.292391872666195,0.33124477061997043,1-1,1.235394480558844,1.1427161388719083,1,Near coin-flip on ratings; group context will decide approach.
-Group K,DR Congo,Uzbekistan,0.3052044135203422,0.3660279392081063,0.3287676472715515,0-0,0.7855709598646574,0.8268675181326035,1,Near coin-flip on ratings; group context will decide approach. Elevated draw risk; a cagey low-scoring game is the modal pattern.
-Group K,DR Congo,Colombia,0.10947058163704049,0.24912563107331273,0.6414037872896468,0-1,0.5220468326652301,1.6316076291072263,2,Colombia are a class above on rating (-1.14 net).
-Group K,Uzbekistan,Colombia,0.11473744631014998,0.23994289171722785,0.6453196619726221,0-1,0.5775289705507801,1.71485701830508,2,Colombia are a class above on rating (-1.09 net).
-Group L,England,Croatia,0.48797599229384225,0.29313313308677275,0.218890874619385,1-0,1.359231099518928,0.8195549036118553,1,"England favored, but within one rating tier (+0.51 net)."
-Group L,England,Ghana,0.777913814267442,0.1646516541215094,0.05743453161104861,2-0,2.2346803469426777,0.45854340816666117,4,England are a class above on rating (+1.58 net).
-Group L,England,Panama,0.7925924236266593,0.15128890243076876,0.05611867394257197,2-0,2.400019725052877,0.5024677924790667,4,England are a class above on rating (+1.56 net).
-Group L,Croatia,Ghana,0.6647375926081676,0.22166212072548155,0.11360028666635089,1-0,1.8775391816373,0.6389106299432975,2,Croatia are a class above on rating (+1.08 net).
-Group L,Croatia,Panama,0.6775825941386635,0.20842355890307437,0.11399384695826212,2-0,2.016553642688726,0.7001125900402217,2,Croatia are a class above on rating (+1.06 net).
-Group L,Ghana,Panama,0.3443109594520044,0.30005741688693766,0.35563162366105794,1-1,1.1283134503469379,1.151142241937664,1,Near coin-flip on ratings; group context will decide approach. Elevated draw risk; a cagey low-scoring game is the modal pattern.
+group,home,away,p_home,p_draw,p_away,xg_home,xg_away,modal_score,note
+A,Mexico,South Africa,0.5765,0.2797,0.1438,1.41,0.56,1-0,Mexico favoured (58%). Mexico host advantage.
+A,South Korea,Czechia,0.3857,0.2912,0.323,1.21,1.08,1-1,Near coin-flip on the model.
+A,Czechia,South Africa,0.4237,0.3246,0.2517,1.08,0.76,1-0,Czechia favoured (42%).
+A,Mexico,South Korea,0.4878,0.2797,0.2324,1.4,0.88,1-0,Mexico favoured (49%). Mexico host advantage.
+A,Czechia,Mexico,0.2526,0.2909,0.4565,0.89,1.3,0-1,Mexico favoured (46%).
+A,South Africa,South Korea,0.2254,0.3328,0.4418,0.67,1.07,0-1,South Korea favoured (44%).
+B,Canada,Bosnia & Herzegovina,0.5507,0.2617,0.1876,1.55,0.79,1-0,Canada favoured (55%). Canada host advantage.
+B,Qatar,Switzerland,0.0847,0.1573,0.758,0.71,2.47,0-2,Switzerland favoured (76%).
+B,Switzerland,Bosnia & Herzegovina,0.6323,0.23,0.1377,1.79,0.7,1-0,Switzerland favoured (63%).
+B,Canada,Qatar,0.6795,0.1949,0.1256,2.15,0.81,2-0,Canada favoured (68%). Canada host advantage.
+B,Switzerland,Canada,0.5051,0.2614,0.2335,1.55,0.97,1-1,Switzerland favoured (51%).
+B,Bosnia & Herzegovina,Qatar,0.4368,0.2941,0.2692,1.26,0.93,1-0,Bosnia & Herzegovina favoured (44%).
+C,Brazil,Morocco,0.5741,0.2957,0.1302,1.31,0.47,1-0,Brazil favoured (57%).
+C,Haiti,Scotland,0.2414,0.2551,0.5035,1.04,1.61,1-1,Scotland favoured (50%).
+C,Scotland,Morocco,0.1701,0.2992,0.5307,0.6,1.29,0-1,Morocco favoured (53%).
+C,Brazil,Haiti,0.9242,0.0598,0.016,3.5,0.38,3-0,Brazil favoured (92%).
+C,Morocco,Haiti,0.6873,0.2118,0.1009,1.88,0.56,1-0,Morocco favoured (69%).
+C,Scotland,Brazil,0.044,0.1373,0.8187,0.4,2.41,0-2,Brazil favoured (82%).
+D,USA,Paraguay,0.5317,0.26,0.2082,1.57,0.88,1-0,USA favoured (53%). USA host advantage.
+D,Australia,Türkiye,0.337,0.2949,0.3681,1.09,1.15,1-1,Near coin-flip on the model.
+D,USA,Australia,0.4562,0.286,0.2578,1.33,0.93,1-0,USA favoured (46%). USA host advantage.
+D,Türkiye,Paraguay,0.4386,0.2793,0.282,1.36,1.04,1-1,Türkiye favoured (44%).
+D,Türkiye,USA,0.3332,0.2714,0.3954,1.22,1.35,1-1,Near coin-flip on the model.
+D,Paraguay,Australia,0.2826,0.3264,0.391,0.83,1.03,0-0,Near coin-flip on the model.
+E,Germany,Curaçao,0.9115,0.0649,0.0235,3.65,0.55,3-0,Germany favoured (91%).
+E,Ivory Coast,Ecuador,0.3077,0.3141,0.3781,0.94,1.07,0-1,Near coin-flip on the model.
+E,Germany,Ivory Coast,0.5663,0.236,0.1977,1.8,0.97,1-1,Germany favoured (57%).
+E,Ecuador,Curaçao,0.7535,0.1729,0.0737,2.18,0.53,2-0,Ecuador favoured (75%).
+E,Ecuador,Germany,0.2298,0.2463,0.5238,1.05,1.7,1-1,Germany favoured (52%).
+E,Curaçao,Ivory Coast,0.0896,0.1941,0.7163,0.56,2.02,0-2,Ivory Coast favoured (72%).
+F,Netherlands,Japan,0.5244,0.2521,0.2235,1.64,0.99,1-1,Netherlands favoured (52%).
+F,Sweden,Tunisia,0.4613,0.3112,0.2274,1.19,0.74,1-0,Sweden favoured (46%).
+F,Netherlands,Sweden,0.5991,0.2261,0.1748,1.89,0.91,1-0,Netherlands favoured (60%).
+F,Tunisia,Japan,0.185,0.3001,0.5149,0.65,1.28,0-1,Japan favoured (51%).
+F,Japan,Sweden,0.4224,0.2792,0.2984,1.34,1.08,1-1,Japan favoured (42%).
+F,Tunisia,Netherlands,0.1033,0.2206,0.6761,0.55,1.8,0-1,Netherlands favoured (68%).
+G,Belgium,Egypt,0.6061,0.2473,0.1466,1.65,0.67,1-0,Belgium favoured (61%).
+G,Iran,New Zealand,0.6,0.2699,0.1301,1.46,0.53,1-0,Iran favoured (60%).
+G,Belgium,Iran,0.5178,0.2695,0.2126,1.49,0.86,1-0,Belgium favoured (52%).
+G,New Zealand,Egypt,0.1841,0.323,0.4929,0.58,1.15,0-1,Egypt favoured (49%).
+G,Egypt,Iran,0.254,0.3232,0.4228,0.78,1.09,0-1,Iran favoured (42%).
+G,New Zealand,Belgium,0.0606,0.1634,0.776,0.46,2.21,0-2,Belgium favoured (78%).
+H,Spain,Cape Verde Islands,0.867,0.1008,0.0322,2.87,0.43,2-0,Spain favoured (87%).
+H,Saudi Arabia,Uruguay,0.1351,0.2851,0.5799,0.51,1.37,0-1,Uruguay favoured (58%).
+H,Spain,Saudi Arabia,0.7998,0.1475,0.0526,2.35,0.45,2-0,Spain favoured (80%).
+H,Uruguay,Cape Verde Islands,0.664,0.2352,0.1007,1.67,0.49,1-0,Uruguay favoured (66%).
+H,Uruguay,Spain,0.1885,0.2711,0.5405,0.76,1.48,0-1,Spain favoured (54%).
+H,Cape Verde Islands,Saudi Arabia,0.2721,0.3368,0.391,0.78,0.99,0-0,Near coin-flip on the model.
+I,France,Senegal,0.5061,0.2822,0.2117,1.39,0.8,1-0,France favoured (51%).
+I,Iraq,Norway,0.1183,0.2207,0.661,0.63,1.84,0-1,Norway favoured (66%).
+I,France,Iraq,0.7731,0.1637,0.0633,2.22,0.48,2-0,France favoured (77%).
+I,Norway,Senegal,0.3759,0.2983,0.3258,1.15,1.05,1-1,Near coin-flip on the model.
+I,Senegal,Iraq,0.579,0.2846,0.1363,1.37,0.52,1-0,Senegal favoured (58%).
+I,Norway,France,0.235,0.2465,0.5186,1.07,1.7,1-1,France favoured (52%).
+J,Argentina,Algeria,0.6783,0.2075,0.1142,1.96,0.66,1-0,Argentina favoured (68%).
+J,Austria,Jordan,0.7211,0.1951,0.0838,1.98,0.52,2-0,Austria favoured (72%).
+J,Argentina,Austria,0.5329,0.2853,0.1818,1.38,0.68,1-0,Argentina favoured (53%).
+J,Jordan,Algeria,0.1319,0.2151,0.653,0.73,1.93,0-1,Algeria favoured (65%).
+J,Algeria,Austria,0.2533,0.2784,0.4683,0.95,1.4,1-1,Austria favoured (47%).
+J,Jordan,Argentina,0.0278,0.1008,0.8714,0.36,2.78,0-2,Argentina favoured (87%).
+K,Portugal,Congo DR,0.7782,0.1603,0.0615,2.25,0.48,2-0,Portugal favoured (78%).
+K,Uzbekistan,Colombia,0.0842,0.2007,0.7151,0.5,1.93,0-1,Colombia favoured (72%).
+K,Portugal,Uzbekistan,0.8041,0.1398,0.0561,2.5,0.52,2-0,Portugal favoured (80%).
+K,Colombia,Congo DR,0.6872,0.2237,0.0891,1.74,0.46,1-0,Colombia favoured (69%).
+K,Colombia,Portugal,0.2938,0.2923,0.414,1.0,1.24,1-1,Portugal favoured (41%).
+K,Congo DR,Uzbekistan,0.3375,0.3334,0.329,0.92,0.9,0-0,Near coin-flip on the model.
+L,England,Croatia,0.5915,0.2407,0.1679,1.73,0.8,1-0,England favoured (59%).
+L,Ghana,Panama,0.3952,0.2864,0.3184,1.25,1.09,1-1,Near coin-flip on the model.
+L,England,Ghana,0.789,0.1545,0.0565,2.29,0.46,2-0,England favoured (79%).
+L,Panama,Croatia,0.125,0.1909,0.6841,0.83,2.2,0-2,Croatia favoured (68%).
+L,Croatia,Ghana,0.6291,0.2192,0.1517,1.93,0.83,1-0,Croatia favoured (63%).
+L,Panama,England,0.0432,0.1237,0.8331,0.46,2.61,0-2,England favoured (83%).

@@ -1,30 +1,30 @@
-# Executive summary — Telegraph predictor picks
+# Executive summary — model picks
 
 ## Group stage
 
 | Group | Winner pick | Runner-up pick | Third (qualify odds) |
 |---|---|---|---|
-| A | Mexico (54%) | South Korea (31%) | Czech Republic (70%) |
-| B | Switzerland (55%) | Canada (43%) | Bosnia and Herzegovina (49%) |
-| C | Brazil (62%) | Morocco (45%) | Scotland (68%) |
-| D | Turkey (29%) | Australia (25%) | United States (70%) |
-| E | Germany (53%) | Ecuador (40%) | Ivory Coast (79%) |
-| F | Netherlands (48%) | Japan (34%) | Sweden (56%) |
-| G | Belgium (61%) | Iran (36%) | Egypt (68%) |
-| H | Spain (75%) | Uruguay (59%) | Saudi Arabia (34%) |
-| I | France (55%) | Norway (35%) | Senegal (73%) |
-| J | Argentina (71%) | Austria (39%) | Algeria (72%) |
-| K | Portugal (50%) | Colombia (38%) | Uzbekistan (39%) |
-| L | England (65%) | Croatia (49%) | Ghana (35%) |
+| A | Mexico (52%) | South Korea (29%) | Czechia (65%) |
+| B | Switzerland (55%) | Canada (39%) | Bosnia & Herzegovina (54%) |
+| C | Brazil (81%) | Morocco (56%) | Scotland (51%) |
+| D | USA (43%) | Türkiye (26%) | Australia (67%) |
+| E | Germany (62%) | Ecuador (39%) | Ivory Coast (82%) |
+| F | Netherlands (59%) | Japan (34%) | Sweden (64%) |
+| G | Belgium (63%) | Iran (39%) | Egypt (64%) |
+| H | Spain (74%) | Uruguay (54%) | Saudi Arabia (42%) |
+| I | France (56%) | Norway (34%) | Senegal (75%) |
+| J | Argentina (68%) | Austria (44%) | Algeria (71%) |
+| K | Portugal (59%) | Colombia (48%) | Congo DR (34%) |
+| L | England (73%) | Croatia (52%) | Ghana (41%) |
 
 ## Knockout picks (advance the higher-probability side)
 
-- **Quarter-finalists**: Argentina, Spain, Brazil, England, France, Portugal, Belgium, Germany
-- **Semi-finalists**: Argentina, Spain, Brazil, England
-- **Finalists**: Argentina, Spain
+- **Quarter-finalists**: Brazil, England, Portugal, Spain, Argentina, Belgium, France, Netherlands
+- **Semi-finalists**: Brazil, Spain, England, Argentina
+- **Finalists**: Brazil, Spain
 
 ## Podium
 
-1. **Argentina** (16.3%)
-2. **Spain** (9.0%)
-3. **Brazil** (8.0%)
+1. **Brazil** (20.3%)
+2. **Spain** (9.7%)
+3. **Argentina** (8.9%)
