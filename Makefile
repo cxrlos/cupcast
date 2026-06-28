@@ -1,7 +1,7 @@
 PAPERS = 01-methodology 02-validation 03-forecast
 V2_PAPERS = 01-methodology 02-comparison
 
-.PHONY: docs docs-v2 test lint forecast all-data $(PAPERS) $(addprefix v2-,$(V2_PAPERS))
+.PHONY: docs docs-v2 test lint forecast forecast-v2 all-data $(PAPERS) $(addprefix v2-,$(V2_PAPERS))
 
 docs: $(PAPERS)
 
@@ -12,6 +12,12 @@ docs-v2: $(addprefix v2-,$(V2_PAPERS))
 
 $(addprefix v2-,$(V2_PAPERS)):
 	cd docs/v2/tex/$(patsubst v2-%,%,$@) && tectonic -o ../../pdf $(patsubst v2-%,%,$@).tex
+
+# v2 run-day: gate on API-Football/ESPN agreement, fit the v2 model, regenerate
+# every outputs/ forecast artifact (pre-tournament, match-level, live bracket,
+# full projected bracket). Refuses to run if the two sources disagree.
+forecast-v2:
+	uv run python -m cupcast.v2.report
 
 test:
 	uv run pytest
