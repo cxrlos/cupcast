@@ -96,9 +96,13 @@ The practical conclusion is to keep the sensible default priors, which are robus
 and remain the best configuration on the actual test.
 
 \section{The forecast}
-The production configuration (default priors, model host advantage, and the
-context travel/altitude covariates) yields the championship probabilities of
-Table~\ref{tab:forecast} from $50{,}000$ simulated tournaments.
+The production configuration (default priors with the model's host-advantage
+term) yields the championship probabilities of Table~\ref{tab:forecast} from
+$50{,}000$ simulated tournaments. The bounded context covariates are applied and
+validated at the level of individual match predictions (Section~3); the
+tournament Monte Carlo itself carries host advantage through the model's
+$\gamma$ term, so the headline probabilities do not depend on path-specific
+travel that a simulated bracket cannot yet resolve.
 
 \begin{table}[h]\centering
 \begin{tabular}{lc@{\qquad}lc}
