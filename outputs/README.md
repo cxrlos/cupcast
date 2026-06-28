@@ -12,8 +12,10 @@ outputs/
     │                      groups): championship odds, podium, market edge,
     │                      sensitivity, and pre-tournament group match predictions.
     ├── live/              Forecast conditioned on the ACTUAL draw: knockout
-    │                      bracket odds, R32 match predictions, and the full
-    │                      most-likely bracket through the final + third place.
+    │                      bracket odds, per-match predictions for every tie from
+    │                      R32 to the final (R32 = actual draw, later rounds =
+    │                      most-likely projected matchups), and the full
+    │                      projected bracket through the final + third place.
     └── validation.md      Held-out WC2026 and rolling-origin scoring vs v1.
 ```
 

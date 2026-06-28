@@ -1,0 +1,33 @@
+round,match,home,away,p_home,p_draw,p_away,p_home_advances,xg_home,xg_away,modal_score,context
+Round of 32,73,South Africa,Canada,0.1974,0.3174,0.4853,0.3273,0.64,1.17,0-1,neutral
+Round of 32,74,Germany,Paraguay,0.6262,0.2163,0.1575,0.7613,1.97,0.88,2-0,neutral
+Round of 32,75,Netherlands,Morocco,0.4617,0.3036,0.2347,0.6282,1.23,0.79,1-0,neutral
+Round of 32,76,Brazil,Japan,0.6534,0.23,0.1165,0.7999,1.75,0.59,1-0,neutral
+Round of 32,77,France,Sweden,0.5924,0.2322,0.1754,0.7371,1.82,0.88,1-0,neutral
+Round of 32,78,Ivory Coast,Norway,0.2486,0.2732,0.4782,0.3659,0.96,1.44,1-1,neutral
+Round of 32,79,Mexico,Ecuador,0.4082,0.3116,0.2803,0.5773,1.22,0.96,1-1,"Mexico home, altitude 2240m"
+Round of 32,80,England,Congo DR,0.7778,0.1691,0.0532,0.896,2.1,0.38,2-0,neutral
+Round of 32,81,USA,Bosnia & Herzegovina,0.5606,0.2605,0.1789,0.7383,1.69,0.76,1-0,USA home
+Round of 32,82,Belgium,Senegal,0.4834,0.2883,0.2283,0.642,1.34,0.83,1-0,neutral
+Round of 32,83,Portugal,Croatia,0.5685,0.2309,0.2006,0.7081,1.86,1.02,1-1,neutral
+Round of 32,84,Spain,Austria,0.5794,0.2498,0.1708,0.7332,1.65,0.77,1-0,neutral
+Round of 32,85,Switzerland,Algeria,0.5155,0.2457,0.2388,0.6561,1.71,1.09,1-1,neutral
+Round of 32,86,Argentina,Cape Verde Islands,0.8229,0.136,0.0411,0.9244,2.4,0.38,2-0,neutral
+Round of 32,87,Colombia,Ghana,0.695,0.208,0.097,0.8371,1.9,0.55,1-0,neutral
+Round of 32,88,Australia,Egypt,0.3607,0.3423,0.2971,0.5347,0.93,0.81,0-0,neutral
+Round of 16,89,Germany,France,0.297,0.2425,0.4605,0.4044,1.33,1.71,1-1,neutral
+Round of 16,90,Canada,Netherlands,0.1595,0.2272,0.6133,0.2463,0.83,1.85,0-1,neutral
+Round of 16,91,Brazil,Norway,0.6615,0.2177,0.1208,0.7972,1.87,0.66,1-0,neutral
+Round of 16,92,Mexico,England,0.164,0.259,0.577,0.2657,0.71,1.57,0-1,Mexico home
+Round of 16,93,Portugal,Spain,0.3039,0.2671,0.4289,0.4294,1.17,1.44,1-1,neutral
+Round of 16,94,USA,Belgium,0.2507,0.2505,0.4988,0.3612,1.1,1.65,1-1,USA home
+Round of 16,95,Argentina,Australia,0.6413,0.2456,0.1131,0.801,1.62,0.52,1-0,neutral
+Round of 16,96,Switzerland,Colombia,0.2821,0.2857,0.4322,0.4068,1.0,1.31,1-1,neutral
+Quarter-finals,97,France,Netherlands,0.3672,0.2661,0.3667,0.5034,1.34,1.34,1-1,neutral
+Quarter-finals,98,Spain,Belgium,0.4997,0.2557,0.2446,0.6465,1.6,1.05,1-1,neutral
+Quarter-finals,99,Brazil,England,0.4042,0.3272,0.2686,0.5752,1.05,0.8,1-0,neutral
+Quarter-finals,100,Argentina,Colombia,0.4363,0.3136,0.2501,0.598,1.15,0.8,1-0,neutral
+Semi-finals,101,France,Spain,0.2645,0.2607,0.4748,0.3835,1.09,1.54,1-1,neutral
+Semi-finals,102,Brazil,Argentina,0.4077,0.3263,0.266,0.5776,1.06,0.79,1-0,neutral
+Third-place match,103,France,Argentina,0.2735,0.2896,0.4369,0.4086,0.96,1.29,1-1,neutral
+Final,104,Spain,Brazil,0.2875,0.2995,0.413,0.4305,0.95,1.2,1-1,neutral

@@ -272,41 +272,68 @@ def write_group_predictions(post, fixtures) -> None:
     (PRE / "match_predictions.md").write_text("\n".join(lines) + "\n")
 
 
-def write_r32_predictions(post, gkz, resolved, venue_by_pair) -> None:
-    """Live R32 match predictions on the actual draw (context-adjusted) -> LIVE."""
-    krows = []
-    for slot in sorted(resolved):
-        h, a = resolved[slot]
-        vc = _R32_VENUE[slot]
-        city = venue_by_pair.get(_canon_pair(h, a), "")
-        alt = venue_altitude(city)
-        hh, ha = h in HOSTS and vc == h, a in HOSTS and vc == a
-        ch, ca = match_ctx(hh, alt), match_ctx(ha, alt)
-        (ph, pdr, pa), _ = adjusted_outcome_probs(post, h, a, ch, ca)
-        adv = advance_probability(post, h, a, vc if vc in HOSTS else "", gkz)
-        egh, ega = predict.expected_goals(post, h, a, hh, ha)
-        note = (f"{h} home" if hh else (f"{a} home" if ha else "neutral"))
-        if alt and alt >= 1200:
-            note += f", altitude {alt}m"
-        krows.append({"match": slot, "home": h, "away": a, "p_home": round(ph, 4),
-                      "p_draw": round(pdr, 4), "p_away": round(pa, 4),
-                      "p_home_advances": round(adv, 4), "xg_home": round(egh, 2),
-                      "xg_away": round(ega, 2),
-                      "modal_score": modal_score(predict.score_matrix(post, h, a, hh, ha)),
-                      "context": note})
-    kdf = pd.DataFrame(krows)
-    kdf.to_csv(LIVE / "match_predictions_knockouts.csv", index=False)
-    lines = ["# Round-of-32 match predictions (live, actual draw)", "",
-             "Each tie on the real bracket; probabilities home/draw/away, P(home advances) "
-             "includes extra time + shootout, context applied from the real venue.", "",
-             "| Match | P(H/D/A) | P(home adv.) | xG | Modal | Context |",
-             "|---|---|---:|---|---|---|"]
-    for r in kdf.itertuples():
-        lines.append(f"| {r.home} v {r.away} "
-                     f"| {r.p_home:.2f}/{r.p_draw:.2f}/{r.p_away:.2f} "
-                     f"| {r.p_home_advances:.2f} "
-                     f"| {r.xg_home:.2f}-{r.xg_away:.2f} | {r.modal_score} | {r.context} |")
-    (LIVE / "r32_match_predictions.md").write_text("\n".join(lines) + "\n")
+_KO_ROUNDS = (
+    ("Round of 32 (actual draw)", [m for m, *_ in R32], True),
+    ("Round of 16 (projected matchups)", [m for m, *_ in R16], False),
+    ("Quarter-finals (projected matchups)", [m for m, *_ in QUARTERFINALS], False),
+    ("Semi-finals (projected matchups)", [m for m, *_ in SEMIFINALS], False),
+    ("Third-place match (projected)", [THIRD_PLACE[0]], False),
+    ("Final (projected)", [FINAL[0]], False),
+)
+
+
+def write_knockout_predictions(post, gkz, resolved, venue_by_pair) -> None:
+    """Per-match predictions for every knockout tie, R32 -> final, -> LIVE.
+
+    R32 ties are the actual draw (context applied from the real venue); later
+    rounds are the most-likely projected matchups from the chalk bracket.
+    """
+    record = project_bracket(post, gkz, resolved)
+    rows = []
+    for round_name, slots, is_r32 in _KO_ROUNDS:
+        for slot in slots:
+            rec = record[slot]
+            h, a, vc = rec["home"], rec["away"], rec["venue"]
+            hh, ha = h in HOSTS and vc == h, a in HOSTS and vc == a
+            if is_r32:
+                alt = venue_altitude(venue_by_pair.get(_canon_pair(h, a), ""))
+                (ph, pdr, pa), _ = adjusted_outcome_probs(post, h, a, match_ctx(hh, alt),
+                                                          match_ctx(ha, alt))
+            else:
+                alt = None
+                ph, pdr, pa = predict.outcome_probs(post, h, a, hh, ha)
+            adv = advance_probability(post, h, a, vc if vc in HOSTS else "", gkz)
+            egh, ega = predict.expected_goals(post, h, a, hh, ha)
+            note = f"{h} home" if hh else (f"{a} home" if ha else "neutral")
+            if alt and alt >= 1200:
+                note += f", altitude {alt}m"
+            rows.append({"round": round_name.split(" (")[0], "match": slot, "home": h, "away": a,
+                         "p_home": round(ph, 4), "p_draw": round(pdr, 4), "p_away": round(pa, 4),
+                         "p_home_advances": round(adv, 4), "xg_home": round(egh, 2),
+                         "xg_away": round(ega, 2),
+                         "modal_score": modal_score(predict.score_matrix(post, h, a, hh, ha)),
+                         "context": note})
+    pd.DataFrame(rows).to_csv(LIVE / "knockout_match_predictions.csv", index=False)
+
+    by_slot = {r["match"]: r for r in rows}
+    lines = ["# Knockout match predictions (R32 → final)", "",
+             "Every knockout tie with probabilities home/draw/away, P(home advances) "
+             "(includes extra time + shootout), expected goals, and modal score. The Round "
+             "of 32 is the actual draw; later rounds are the **most-likely projected "
+             "matchups** (the chalk bracket), so they shift as results come in.", ""]
+    for round_name, slots, _is_r32 in _KO_ROUNDS:
+        lines += [f"## {round_name}", "",
+                  "| Match | P(H/D/A) | P(home adv.) | xG | Modal | Context |",
+                  "|---|---|---:|---|---|---|"]
+        for slot in slots:
+            r = by_slot[slot]
+            lines.append(f"| {r['home']} v {r['away']} "
+                         f"| {r['p_home']:.2f}/{r['p_draw']:.2f}/{r['p_away']:.2f} "
+                         f"| {r['p_home_advances']:.2f} "
+                         f"| {r['xg_home']:.2f}-{r['xg_away']:.2f} "
+                         f"| {r['modal_score']} | {r['context']} |")
+        lines.append("")
+    (LIVE / "knockout_match_predictions.md").write_text("\n".join(lines) + "\n")
 
 
 # --------------------------------------------------------------------------- #
@@ -428,13 +455,13 @@ def main() -> None:
         raise RuntimeError(f"live bracket invalid: {report['issues']}")
 
     write_group_predictions(post, fixtures)
-    write_r32_predictions(post, gkz, resolved, espn_r32_venues(espn))
+    write_knockout_predictions(post, gkz, resolved, espn_r32_venues(espn))
     write_live_forecast(post, gkz, resolved)
     write_bracket_results(project_bracket(post, gkz, resolved))
     print(f"wrote {PRE}/: simulation_results, top3_forecast, executive_summary,")
     print("  market_comparison, sensitivity, match_predictions(_groups)")
-    print(f"wrote {LIVE}/: knockout_bracket_forecast, r32_match_predictions,")
-    print("  match_predictions_knockouts, bracket_results")
+    print(f"wrote {LIVE}/: knockout_bracket_forecast, knockout_match_predictions,")
+    print("  bracket_results")
 
 
 if __name__ == "__main__":
