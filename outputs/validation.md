@@ -1,22 +1,22 @@
 # Validation
 
-## Tournament replays (as-of training)
+## Held-out 2026 World Cup (the real test)
 
-| tournament   |   n |   log_loss |    brier |      rps |   log_loss_uniform |   rps_uniform |
-|:-------------|----:|-----------:|---------:|---------:|-------------------:|--------------:|
-| euro2024     |  51 |   0.990105 | 0.592759 | 0.18709  |            1.09861 |      0.222222 |
-| copa2024     |  32 |   0.88697  | 0.522047 | 0.162184 |            1.09861 |      0.230903 |
+Both models trained strictly to the 11 June 2026 cutoff, then scored on the 72 completed World Cup matches that both models can name. Lower is better; the uniform forecast scores log-loss 1.099.
 
-## Rolling out-of-sample (internationals 2022-2026)
+| forecaster   |   n |   log_loss |   brier |    rps |
+|:-------------|----:|-----------:|--------:|-------:|
+| v2           |  72 |     0.8279 |  0.4958 | 0.1489 |
+| v1           |  72 |     0.8457 |  0.5043 | 0.1513 |
+| uniform      |  72 |     1.0986 |  0.6667 | 0.2315 |
 
-|    n |   log_loss |    brier |      rps |
-|-----:|-----------:|---------:|---------:|
-| 4167 |   0.862224 | 0.506782 | 0.168272 |
+## Rolling out-of-sample (internationals, 3-fold rolling origin)
 
-## Club tier (vs Pinnacle closing odds)
+Time-respecting cross-validation on 3973 pre-cutoff international matches: fit before each fold boundary, score the next block. The dynamic model is compared to a static weighted Dixon–Coles baseline (penaltyblog) and the uniform forecast.
 
-| forecaster       |    n |   log_loss |    brier |      rps |
-|:-----------------|-----:|-----------:|---------:|---------:|
-| Dixon-Coles      | 9076 |   0.991459 | 0.589838 | 0.202655 |
-| Pinnacle closing | 9076 |   0.965148 | 0.573281 | 0.194839 |
+| forecaster   |   n |   log_loss |   brier |    rps |
+|:-------------|----:|-----------:|--------:|-------:|
+| model        | 772 |     0.9096 |  0.5378 | 0.1746 |
+| uniform      | 772 |     1.0986 |  0.6667 | 0.2342 |
+| penaltyblog  | 772 |     0.9119 |  0.5373 | 0.1748 |
 
