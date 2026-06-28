@@ -20,7 +20,7 @@ improves all three scores further; an honest counter-result is that
 cross-validated hyperparameter tuning, while it lowers the internationals
 cross-validation loss, \emph{degrades} World Cup performance---the model's
 default priors generalise better than tuned ones. We close with the headline
-forecast.
+forecast and a sharpened version conditioned on the realised knockout bracket.
 \end{abstract}
 
 \section{Protocol}
@@ -123,6 +123,41 @@ paths---nudging penalty-strong sides such as Colombia and France up by a few
 tenths of a percentage point while leaving the ordering of the favourites
 unchanged. That the headline is robust to it is reassuring, not disappointing:
 a model whose forecast swung on coin-flip shootouts would be the more suspect one.
+
+\section{Knockout forecast on the actual draw}
+With the group stage complete, the forecast of Table~\ref{tab:forecast} can be
+sharpened: rather than simulating the groups, we seed $50{,}000$ tournaments
+directly from the \emph{actual} Round-of-32 bracket and play forward. The bracket
+is reconstructed from the official final standings and validated slot-by-slot
+against the real draw---a check that exposed our Annex-C best-thirds allocator as
+a heuristic which mis-pairs three of the sixteen third-placed slots, so the
+third-place pairings are taken from the real draw rather than the allocator. The
+held-out model and the penalty shootout edge are otherwise unchanged.
+
+\begin{table}[h]\centering
+\begin{tabular}{lc@{\qquad}lc}
+\toprule
+Team & Champion & Team & Champion \\
+\midrule
+Brazil    & 19.4\% & Netherlands & 6.1\% \\
+Argentina & 15.2\% & Colombia    & 5.4\% \\
+England   & 13.0\% & Belgium     & 4.1\% \\
+Spain     & 12.1\% & Germany     & 2.6\% \\
+Portugal  & 6.8\%  & Switzerland & 1.6\% \\
+France    & 6.2\%  & Morocco     & 1.3\% \\
+\bottomrule
+\end{tabular}
+\caption{Championship probabilities conditioned on the actual Round-of-32 draw,
+from 50{,}000 Monte Carlo tournaments seeded with the real bracket (validated
+against the official draw).}\label{tab:conditioned}
+\end{table}
+
+Conditioning on the real draw reshapes the title race. Argentina rises from
+$10.3\%$ to $15.2\%$: it landed in the softest quadrant---Cape~Verde in the Round
+of~32---and now carries the field's highest semifinal probability ($49.8\%$).
+England firms to $13.0\%$ on a favourable path, while Brazil remains the nominal
+favourite ($19.4\%$) with Argentina close behind. Uruguay, eliminated in the
+group stage, leaves the title picture entirely.
 
 \section{Discussion}
 Two of the redesign's premises are validated on the real tournament: a
