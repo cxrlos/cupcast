@@ -28,7 +28,7 @@ Monte Carlo forecasting engine for the 2026 FIFA World Cup. Dixon-Coles goal mod
 - `src/cupcast/report/` — generates `outputs/` artifacts and `docs/tex/figures/`
 - `docs/tex/` — LaTeX paper sources (numbered folders define reading order; `shared/` holds preamble + bibliography)
 - `docs/pdf/` — committed PDF builds
-- `outputs/` — committed final artifacts (simulation results, match predictions, executive summary)
+- `outputs/` — committed final artifacts, split by model: `outputs/v1/` (baseline, via `cupcast.v1.report.build`) and `outputs/v2/` (via `cupcast.v2.report`, `make forecast-v2`), the latter segmented into `pretournament/` (held-out forecast) and `live/` (conditioned on the actual draw) plus `validation.md`
 
 ## Hard rules
 

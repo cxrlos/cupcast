@@ -14,8 +14,9 @@ $(addprefix v2-,$(V2_PAPERS)):
 	cd docs/v2/tex/$(patsubst v2-%,%,$@) && tectonic -o ../../pdf $(patsubst v2-%,%,$@).tex
 
 # v2 run-day: gate on API-Football/ESPN agreement, fit the v2 model, regenerate
-# every outputs/ forecast artifact (pre-tournament, match-level, live bracket,
-# full projected bracket). Refuses to run if the two sources disagree.
+# every outputs/v2/ artifact — pretournament/ (held-out forecast) and live/
+# (conditioned on the actual draw + full bracket). Refuses to run if the two
+# sources disagree.
 forecast-v2:
 	uv run python -m cupcast.v2.report
 

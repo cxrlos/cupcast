@@ -42,6 +42,9 @@ from cupcast.v2.sim.structure import (
 )
 
 OUT = Path("outputs")
+V2 = OUT / "v2"
+PRE = V2 / "pretournament"
+LIVE = V2 / "live"
 MARKET_CSV = Path("data/processed/market_outrights.csv")
 CUTOFF = "2026-06-11"
 SEED = 2026
@@ -139,7 +142,7 @@ def fit_forecast_model(client):
 # --------------------------------------------------------------------------- #
 def write_pretournament(details) -> None:
     table = details.table
-    table.round(5).to_csv(OUT / "simulation_results.csv", index=False)
+    table.round(5).to_csv(PRE / "simulation_results.csv", index=False)
 
     lines = ["# Top-3 forecast", ""]
     for slot, col in (("Champion", "p_champion"), ("Runner-up", "p_runner_up"),
@@ -154,7 +157,7 @@ def write_pretournament(details) -> None:
               "| Champion | Runner-up | Third | Probability |", "|---|---|---|---|"]
     for r in pod.itertuples():
         lines.append(f"| {r.champion} | {r.runner_up} | {r.third} | {r.probability:.3%} |")
-    (OUT / "top3_forecast.md").write_text("\n".join(lines) + "\n")
+    (PRE / "top3_forecast.md").write_text("\n".join(lines) + "\n")
 
     t = table.set_index("team")
     el = ["# Executive summary — model picks", "", "## Group stage", "",
@@ -178,7 +181,7 @@ def write_pretournament(details) -> None:
     el += ["", "## Podium", "", f"1. **{champ}** ({t.loc[champ, 'p_champion']:.1%})",
            f"2. **{run}** ({t.loc[run, 'p_runner_up']:.1%})",
            f"3. **{third}** ({t.loc[third, 'p_podium_third']:.1%})"]
-    (OUT / "executive_summary.md").write_text("\n".join(el) + "\n")
+    (PRE / "executive_summary.md").write_text("\n".join(el) + "\n")
 
     if MARKET_CSV.exists():
         market = pd.read_csv(MARKET_CSV)
@@ -189,13 +192,13 @@ def write_pretournament(details) -> None:
         merged["edge"] = merged["p_champion"] - merged["market_p_champion"]
         merged = merged.sort_values("edge", key=lambda s: s.abs(), ascending=False)
         merged[["team", "p_champion", "market_p_champion", "edge"]].to_csv(
-            OUT / "market_comparison.csv", index=False)
+            PRE / "market_comparison.csv", index=False)
         ml = ["# Model vs market (championship probabilities)", "",
               "| Team | Model | Market | Edge |", "|---|---|---|---|"]
         for r in merged.head(15).itertuples():
             mp = "-" if pd.isna(r.market_p_champion) else f"{r.market_p_champion:.1%}"
             ml.append(f"| {r.team} | {r.p_champion:.1%} | {mp} | {r.edge:+.1%} |")
-        (OUT / "market_comparison.md").write_text("\n".join(ml) + "\n")
+        (PRE / "market_comparison.md").write_text("\n".join(ml) + "\n")
 
     tid = {team: i for i, team in enumerate(ALL_TEAMS)}
     champ_ids = details.match_winner[104]
@@ -212,7 +215,7 @@ def write_pretournament(details) -> None:
             row[col] = round(float(is_ch[mask].mean()), 4) if mask.any() else float("nan")
         rows.append(row)
     sens = pd.DataFrame(rows)
-    (OUT / "sensitivity.md").write_text(
+    (PRE / "sensitivity.md").write_text(
         "\n".join(["# Sensitivity analysis", "",
                    "## Path dependence: P(champion | group-stage outcome)", "",
                    sens.to_markdown(index=False), "",
@@ -237,7 +240,8 @@ def _canon_pair(a: str, b: str) -> frozenset:
     return frozenset({canon(a), canon(b)})
 
 
-def write_match_predictions(post, gkz, fixtures, resolved, venue_by_pair) -> None:
+def write_group_predictions(post, fixtures) -> None:
+    """Pre-tournament group match predictions (context-adjusted) -> PRE."""
     known = set(post.teams)
     grp = [f for f in fixtures if "Group Stage" in str(f["league"].get("round", ""))]
     grows = []
@@ -246,8 +250,7 @@ def write_match_predictions(post, gkz, fixtures, resolved, venue_by_pair) -> Non
         h, a = f["teams"]["home"]["name"], f["teams"]["away"]["name"]
         if h not in known or a not in known:
             continue
-        ch = match_context(grp, h, f)
-        ca = match_context(grp, a, f)
+        ch, ca = match_context(grp, h, f), match_context(grp, a, f)
         (ph, pdr, pa), _ = adjusted_outcome_probs(post, h, a, ch, ca)
         egh, ega = predict.expected_goals(post, h, a, h in HOSTS, False)
         gmat = predict.score_matrix(post, h, a, h in HOSTS, False)
@@ -256,44 +259,54 @@ def write_match_predictions(post, gkz, fixtures, resolved, venue_by_pair) -> Non
                       "xg_home": round(egh, 2), "xg_away": round(ega, 2),
                       "modal_score": modal_score(gmat)})
     gdf = pd.DataFrame(grows)
-    gdf.to_csv(OUT / "match_predictions_groups.csv", index=False)
-
-    krows = []
-    for slot in sorted(resolved):
-        h, a = resolved[slot]
-        vc = _R32_VENUE[slot]
-        city = venue_by_pair.get(_canon_pair(h, a), "")
-        hh, ha = h in HOSTS and vc == h, a in HOSTS and vc == a
-        ch = match_ctx(hh, venue_altitude(city))
-        ca = match_ctx(ha, venue_altitude(city))
-        (ph, pdr, pa), _ = adjusted_outcome_probs(post, h, a, ch, ca)
-        adv = advance_probability(post, h, a, vc if vc in HOSTS else "", gkz)
-        egh, ega = predict.expected_goals(post, h, a, hh, ha)
-        krows.append({"match": slot, "home": h, "away": a, "p_home": round(ph, 4),
-                      "p_draw": round(pdr, 4), "p_away": round(pa, 4),
-                      "p_home_advances": round(adv, 4), "xg_home": round(egh, 2),
-                      "xg_away": round(ega, 2),
-                      "modal_score": modal_score(predict.score_matrix(post, h, a, hh, ha))})
-    kdf = pd.DataFrame(krows)
-    kdf.to_csv(OUT / "match_predictions_knockouts.csv", index=False)
-
-    lines = ["# Match predictions", "",
-             "Model trained to the 11 June 2026 cutoff; probabilities home/draw/away, "
-             "context layer (host/altitude/travel) applied where venue data is available.", ""]
+    gdf.to_csv(PRE / "match_predictions_groups.csv", index=False)
+    lines = ["# Group match predictions (pre-tournament)", "",
+             "Model trained to the 11 June 2026 cutoff; probabilities home/draw/away, with the "
+             "bounded context layer (host/altitude/travel) applied per match.", ""]
     for g, sub in gdf.groupby("group"):
         lines += [f"## Group {g}", "", "| Match | P(H/D/A) | xG | Modal |", "|---|---|---|---|"]
         for r in sub.itertuples():
             lines.append(f"| {r.home} v {r.away} | {r.p_home:.2f}/{r.p_draw:.2f}/{r.p_away:.2f} "
                          f"| {r.xg_home:.2f}-{r.xg_away:.2f} | {r.modal_score} |")
         lines.append("")
-    lines += ["## Round of 32 (actual bracket)", "",
-              "| Match | P(H/D/A) | P(home advances) | xG | Modal |", "|---|---|---|---|---|"]
+    (PRE / "match_predictions.md").write_text("\n".join(lines) + "\n")
+
+
+def write_r32_predictions(post, gkz, resolved, venue_by_pair) -> None:
+    """Live R32 match predictions on the actual draw (context-adjusted) -> LIVE."""
+    krows = []
+    for slot in sorted(resolved):
+        h, a = resolved[slot]
+        vc = _R32_VENUE[slot]
+        city = venue_by_pair.get(_canon_pair(h, a), "")
+        alt = venue_altitude(city)
+        hh, ha = h in HOSTS and vc == h, a in HOSTS and vc == a
+        ch, ca = match_ctx(hh, alt), match_ctx(ha, alt)
+        (ph, pdr, pa), _ = adjusted_outcome_probs(post, h, a, ch, ca)
+        adv = advance_probability(post, h, a, vc if vc in HOSTS else "", gkz)
+        egh, ega = predict.expected_goals(post, h, a, hh, ha)
+        note = (f"{h} home" if hh else (f"{a} home" if ha else "neutral"))
+        if alt and alt >= 1200:
+            note += f", altitude {alt}m"
+        krows.append({"match": slot, "home": h, "away": a, "p_home": round(ph, 4),
+                      "p_draw": round(pdr, 4), "p_away": round(pa, 4),
+                      "p_home_advances": round(adv, 4), "xg_home": round(egh, 2),
+                      "xg_away": round(ega, 2),
+                      "modal_score": modal_score(predict.score_matrix(post, h, a, hh, ha)),
+                      "context": note})
+    kdf = pd.DataFrame(krows)
+    kdf.to_csv(LIVE / "match_predictions_knockouts.csv", index=False)
+    lines = ["# Round-of-32 match predictions (live, actual draw)", "",
+             "Each tie on the real bracket; probabilities home/draw/away, P(home advances) "
+             "includes extra time + shootout, context applied from the real venue.", "",
+             "| Match | P(H/D/A) | P(home adv.) | xG | Modal | Context |",
+             "|---|---|---:|---|---|---|"]
     for r in kdf.itertuples():
         lines.append(f"| {r.home} v {r.away} "
                      f"| {r.p_home:.2f}/{r.p_draw:.2f}/{r.p_away:.2f} "
                      f"| {r.p_home_advances:.2f} "
-                     f"| {r.xg_home:.2f}-{r.xg_away:.2f} | {r.modal_score} |")
-    (OUT / "match_predictions.md").write_text("\n".join(lines) + "\n")
+                     f"| {r.xg_home:.2f}-{r.xg_away:.2f} | {r.modal_score} | {r.context} |")
+    (LIVE / "r32_match_predictions.md").write_text("\n".join(lines) + "\n")
 
 
 # --------------------------------------------------------------------------- #
@@ -301,7 +314,7 @@ def write_match_predictions(post, gkz, fixtures, resolved, venue_by_pair) -> Non
 # --------------------------------------------------------------------------- #
 def write_live_forecast(post, gkz, resolved) -> None:
     tbl = simulate_live_knockouts(post, resolved, gk_z=gkz, n_sims=N_SIMS, seed=SEED)
-    tbl.to_csv(OUT / "knockout_bracket_forecast.csv", index=False)
+    tbl.to_csv(LIVE / "knockout_bracket_forecast.csv", index=False)
     lines = ["# Cupcast II — Knockout bracket forecast (conditioned on the actual draw)", "",
              f"From {N_SIMS:,} Monte Carlo simulations seeded with the real Round-of-32 bracket, "
              "with the penalty shootout edge. Seed 2026.", "",
@@ -309,7 +322,7 @@ def write_live_forecast(post, gkz, resolved) -> None:
     for r in tbl.head(16).itertuples():
         lines.append(f"| {r.team} | {r.p_champion:.1%} | {r.p_final:.1%} "
                      f"| {r.p_sf:.1%} | {r.p_qf:.1%} |")
-    (OUT / "knockout_bracket_forecast.md").write_text("\n".join(lines) + "\n")
+    (LIVE / "knockout_bracket_forecast.md").write_text("\n".join(lines) + "\n")
 
 
 def project_bracket(post, gkz, resolved, advance_fn=advance_probability) -> dict[int, dict]:
@@ -366,7 +379,7 @@ def bracket_results_md(record: dict[int, dict]) -> str:
 
 
 def write_bracket_results(record: dict[int, dict]) -> None:
-    (OUT / "bracket_results.md").write_text(bracket_results_md(record))
+    (LIVE / "bracket_results.md").write_text(bracket_results_md(record))
 
 
 # --------------------------------------------------------------------------- #
@@ -381,7 +394,8 @@ def main() -> None:
     from dotenv import load_dotenv
 
     load_dotenv()
-    OUT.mkdir(exist_ok=True)
+    PRE.mkdir(parents=True, exist_ok=True)
+    LIVE.mkdir(parents=True, exist_ok=True)
 
     af = ApiFootballClient()
     espn = EspnClient()
@@ -413,12 +427,14 @@ def main() -> None:
     if not report["ok"]:
         raise RuntimeError(f"live bracket invalid: {report['issues']}")
 
-    write_match_predictions(post, gkz, fixtures, resolved, espn_r32_venues(espn))
+    write_group_predictions(post, fixtures)
+    write_r32_predictions(post, gkz, resolved, espn_r32_venues(espn))
     write_live_forecast(post, gkz, resolved)
     write_bracket_results(project_bracket(post, gkz, resolved))
-    print("wrote outputs/: simulation_results, top3_forecast, executive_summary,")
-    print("  market_comparison, sensitivity, match_predictions, knockout_bracket_forecast,")
-    print("  bracket_results")
+    print(f"wrote {PRE}/: simulation_results, top3_forecast, executive_summary,")
+    print("  market_comparison, sensitivity, match_predictions(_groups)")
+    print(f"wrote {LIVE}/: knockout_bracket_forecast, r32_match_predictions,")
+    print("  match_predictions_knockouts, bracket_results")
 
 
 if __name__ == "__main__":

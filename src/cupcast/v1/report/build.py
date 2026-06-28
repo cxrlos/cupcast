@@ -28,7 +28,7 @@ from cupcast.v1.validate.club import club_backtest, club_data_available, club_re
 from cupcast.v1.validate.metrics import calibration_table, summarize  # noqa: E402
 from cupcast.v1.validate.tournaments import replay_report  # noqa: E402
 
-OUTPUTS = Path("outputs")
+OUTPUTS = Path("outputs/v1")
 FIGURES = Path("docs/v1/tex/figures")
 GENERATED = Path("docs/v1/tex/generated")
 MARKET_CSV = Path("data/processed/market_outrights.csv")
